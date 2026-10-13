@@ -35,10 +35,10 @@ h1{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;
 :root:not([data-theme]) .theme .t-sys,:root[data-theme="light"] .theme .t-light,:root[data-theme="dark"] .theme .t-dark{display:block}
 
 .cardwrap{position:relative}
-.toast{position:absolute;right:116px;top:50%;z-index:2;padding:9px 18px;border:1px solid var(--line);border-radius:10px;
-  background:var(--panel);color:var(--ink);font:500 15px var(--sans);white-space:nowrap;
-  box-shadow:0 4px 16px rgba(23,33,43,.12);opacity:0;transform:translate(6px,-50%);pointer-events:none}
-.toast.show{opacity:.95;transform:translate(0,-50%)}
+.toast{position:absolute;left:50%;top:calc(100% + 12px);z-index:2;padding:11px 24px;border:1px solid var(--line);border-radius:12px;
+  background:var(--panel);color:var(--ink);font:500 16px var(--sans);white-space:nowrap;
+  box-shadow:0 6px 20px rgba(23,33,43,.14);opacity:0;transform:translate(-50%,-6px);pointer-events:none}
+.toast.show{opacity:.95;transform:translate(-50%,0)}
 @media (prefers-reduced-motion:no-preference){
   .toast{transition:opacity .9s ease,transform .9s ease}
   .toast.show{transition:opacity .18s ease,transform .18s ease}
@@ -84,7 +84,6 @@ input.text{width:260px;max-width:100%;padding:7px 10px;border:1px solid var(--li
 @media (max-width:560px){
   main{padding-top:24px}
   .row{padding:12px 10px 12px 14px}
-  .toast{right:114px;font-size:14px;padding:8px 14px}
   .pw{font-size:16px}
   .opts{grid-template-columns:1fr;gap:6px}
   .opts>div{margin-bottom:12px}
@@ -106,13 +105,13 @@ input.text{width:260px;max-width:100%;padding:7px 10px;border:1px solid var(--li
 <div class="cardwrap">
 <section class="out" aria-live="polite">
   <div class="row">
-    <div class="toast" id="toast" role="status" aria-live="polite"></div>
     <span class="pw" id="pw" title="Натисніть, щоб скопіювати"></span>
     <button type="button" class="ibtn" id="gen" title="Згенерувати новий" aria-label="Згенерувати новий"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v5h-5"/></svg></button>
     <button type="button" class="ibtn" id="copy" title="Копіювати" aria-label="Копіювати"><svg class="i-copy" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg><svg class="i-ok" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button>
   </div>
   <p class="err" id="err"></p>
 </section>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 </div>
 
 <form id="f" class="opts" autocomplete="off" onsubmit="return false">
