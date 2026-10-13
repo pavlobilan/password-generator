@@ -87,6 +87,20 @@ input.text{width:260px;max-width:100%;padding:7px 10px;border:1px solid var(--li
 .reveal.on{grid-template-rows:1fr;opacity:1;margin-top:0}
 .reveal>.inner{min-height:0;overflow:hidden;display:grid;grid-template-columns:var(--lblw) 1fr;gap:16px;align-items:center;padding:3px 0;margin:-3px 0}
 .ready .reveal{transition:grid-template-rows .28s ease,opacity .22s ease,margin-top .28s ease}
+@media (min-width:561px){
+  :root{--lblw:124px}
+  .opts{gap:22px 18px}
+  .lbl{font-size:16.5px}
+  input[type=number]{width:88px;padding:9px 10px;font-size:18px;border-radius:10px}
+  input[type=range]{width:300px;height:22px}
+  .chips{gap:8px}
+  .chip span{min-width:78px;padding:9px 16px;font-size:16.5px;border-radius:10px}
+  .check{gap:10px;font-size:17px}
+  .check input{width:19px;height:19px;margin-top:3px}
+  .check small{font-size:14px}
+  input.text{width:320px;padding:10px 13px;font-size:17.5px;border-radius:10px}
+  .reveal>.inner{gap:18px}
+}
 @media (max-width:560px){
   html,body{height:100%}
   main{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;padding:46px 16px 14px}
