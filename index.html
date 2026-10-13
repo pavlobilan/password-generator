@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="uk"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'">
+<title>Генератор паролів</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%232F55C8'/%3E%3Ctext x='16' y='22' font-family='monospace' font-size='16' font-weight='700' fill='white' text-anchor='middle'%3E*%23%3C/text%3E%3C/svg%3E">
+<style>
+:root{
+  --page:#E9EDF1; --panel:#FFFFFF; --well:#F4F6F8; --ink:#17212B; --mute:#5E6B78; --line:#D3DAE1;
+  --accent:#2F55C8; --accent-ink:#FFFFFF; --digit:#0E7A6A; --sym:#B4441C;
+  --mono:"Cascadia Mono","JetBrains Mono","SF Mono",Consolas,"DejaVu Sans Mono",monospace;
+  --sans:"Segoe UI Variable Text","Segoe UI",system-ui,-apple-system,Roboto,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root{
+  --page:#0F151B; --panel:#18212A; --well:#121A21; --ink:#E4EAF0; --mute:#8D9AA7; --line:#2A3540;
+  --accent:#7C9BFF; --accent-ink:#0F151B; --digit:#46C6B2; --sym:#F08A5D;
+}}
+*{box-sizing:border-box}
+html{background:var(--page)}
+body{margin:0;background:var(--page);color:var(--ink);font:15px/1.5 var(--sans);-webkit-font-smoothing:antialiased}
+main{max-width:720px;margin:0 auto;padding:40px 16px 56px}
+h1{font-size:20px;font-weight:600;letter-spacing:-.01em;margin:0 0 20px}
+
+.out{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.row{display:flex;align-items:center;gap:12px;padding:16px 12px 16px 20px}
+.pw{flex:1;min-width:0;font:500 21px/1.35 var(--mono);letter-spacing:.04em;word-break:break-all;cursor:copy}
+.pw .d{color:var(--digit)} .pw .s{color:var(--sym)}
+.copy{flex:none;width:112px;padding:7px 0;border:1px solid var(--line);border-radius:8px;background:var(--panel);
+  color:var(--ink);font:500 13px var(--sans);cursor:pointer}
+.copy:hover{border-color:var(--accent);color:var(--accent)}
+.copy.done{background:var(--digit);border-color:var(--digit);color:var(--panel)}
+.bar{display:flex;gap:8px;justify-content:space-between;align-items:center;padding:12px 12px 12px 20px;background:var(--well);border-top:1px solid var(--line)}
+.meta{color:var(--mute);font-size:13px}
+.btn{padding:8px 16px;border:0;border-radius:8px;background:var(--accent);color:var(--accent-ink);font:600 14px var(--sans);cursor:pointer}
+.err{flex:1;color:var(--sym);font-size:14px}
+
+.opts{margin-top:28px;display:grid;grid-template-columns:150px 1fr;gap:18px 16px;align-items:center}
+.lbl{color:var(--mute);font-size:14px}
+.num{display:flex;align-items:center;gap:16px}
+input[type=number]{width:72px;padding:6px 8px;text-align:center;border:1px solid var(--line);border-radius:8px;
+  background:var(--panel);color:var(--ink);font:500 15px var(--mono)}
+input[type=range]{width:220px;accent-color:var(--accent)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip input{position:absolute;opacity:0;pointer-events:none}
+.chip span{display:inline-block;min-width:64px;padding:6px 12px;text-align:center;border:1px solid var(--line);
+  border-radius:8px;background:var(--well);color:var(--mute);font:500 14px var(--mono);cursor:pointer;user-select:none}
+.chip input:checked+span{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.chip input:focus-visible+span,input:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.checks{display:flex;flex-wrap:wrap;gap:12px 32px}
+.check{display:flex;align-items:flex-start;gap:8px;cursor:pointer}
+.check input{margin:4px 0 0;accent-color:var(--accent)}
+.check small{display:block;color:var(--mute);font-size:12.5px}
+.check code{font-family:var(--mono)}
+input.text{width:260px;max-width:100%;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);
+  color:var(--ink);font:15px var(--mono)}
+@media (max-width:560px){
+  main{padding-top:24px}
+  .row{padding:12px 10px 12px 14px}
+  .pw{font-size:16px}
+  .copy{width:auto;padding:7px 10px}
+  .bar{padding:12px 14px}
+  .opts{grid-template-columns:1fr;gap:6px}
+  .opts>div{margin-bottom:12px}
+  .num input[type=range]{flex:1;width:auto}
+  input.text{width:100%}
+}
+@media (prefers-reduced-motion:no-preference){.copy{transition:background .15s,color .15s,border-color .15s}}
+</style></head><body><main>
+<h1>Генератор паролів</h1>
+
+<section class="out" aria-live="polite">
+  <div class="row" id="row">
+    <span class="pw" id="pw" title="Натисніть, щоб скопіювати"></span>
+    <button type="button" class="copy" id="copy">Копіювати</button>
+  </div>
+  <div class="bar">
+    <span class="meta" id="meta"></span>
+    <button type="button" class="btn" id="gen">Згенерувати</button>
+  </div>
+</section>
+
+<form id="f" class="opts" autocomplete="off" onsubmit="return false">
+  <label class="lbl" for="len">Довжина</label>
+  <div class="num"><input type="number" name="len" id="len" min="4" max="128" value="25">
+    <input type="range" id="lenr" min="4" max="64" value="25" aria-label="Довжина"></div>
+  <span class="lbl">Символи</span>
+  <div class="chips">
+    <label class="chip"><input type="checkbox" name="upper" checked><span>A–Z</span></label>
+    <label class="chip"><input type="checkbox" name="lower" checked><span>a–z</span></label>
+    <label class="chip"><input type="checkbox" name="digits" checked><span>0–9</span></label>
+    <label class="chip"><input type="checkbox" name="special" checked><span>!#%</span></label>
+  </div>
+  <span class="lbl">Правила</span>
+  <div class="checks">
+    <label class="check"><input type="checkbox" name="ambiguous" checked>
+      <span>Читабельний набір<small>Без <code>I O Q l o 0 1</code>, як у Windows LAPS</small></span></label>
+    <label class="check"><input type="checkbox" name="each" checked>
+      <span>Кожен тип хоча б раз<small>Для політик складності паролів</small></span></label>
+  </div>
+  <label class="lbl" for="symbols">Спецсимволи</label>
+  <div><input class="text" type="text" name="symbols" id="symbols" value="!#%+@:=?*" spellcheck="false"></div>
+  <label class="lbl" for="exclude">Не використовувати</label>
+  <div><input class="text" type="text" name="exclude" id="exclude" placeholder="напр. xyz" spellcheck="false"></div>
+</form>
+</main>
+<script>
+(function(){
+  "use strict";
+  // Набори Windows LAPS «improved readability» (PasswordComplexity = 5)
+  var SETS = {
+    upper:  ["ABCDEFGHIJKLMNOPQRSTUVWXYZ", "ABCDEFGHJKLMNPRSTUVWXYZ"],
+    lower:  ["abcdefghijklmnopqrstuvwxyz", "abcdefghijkmnpqrstuvwxyz"],
+    digits: ["0123456789", "23456789"]
+  };
+  var MIN_LEN = 4, MAX_LEN = 128, DEF_SYMBOLS = "!#%+@:=?*";
+  var FLAGS = ["upper","lower","digits","special","ambiguous","each"];
+
+  var form = document.getElementById("f"), pwEl = document.getElementById("pw"),
+      meta = document.getElementById("meta"), copyBtn = document.getElementById("copy"),
+      lenN = document.getElementById("len"), lenR = document.getElementById("lenr"),
+      current = "";
+
+  // Рівномірне випадкове число 0..n-1 з CSPRNG (rejection sampling, без modulo bias)
+  function randInt(n){
+    var buf = new Uint32Array(1), limit = Math.floor(0x100000000 / n) * n;
+    do { crypto.getRandomValues(buf); } while (buf[0] >= limit);
+    return buf[0] % n;
+  }
+  function pick(s){ return s[randInt(s.length)]; }
+  function shuffle(a){
+    for (var i = a.length - 1; i > 0; i--){ var j = randInt(i + 1), t = a[i]; a[i] = a[j]; a[j] = t; }
+    return a;
+  }
+  function uniq(s){ return Array.from(new Set(Array.from(s))).join(""); }
+
+  function readOpts(){
+    var o = {};
+    FLAGS.forEach(function(k){ o[k] = form.elements[k].checked; });
+    var n = parseInt(lenN.value, 10);
+    o.len = isNaN(n) ? 25 : Math.max(MIN_LEN, Math.min(MAX_LEN, n));
+    o.symbols = uniq(Array.from(form.elements.symbols.value).filter(function(c){
+      return /\S/.test(c) && !/[A-Za-z0-9]/.test(c); }).join(""));
+    o.exclude = form.elements.exclude.value;
+    return o;
+  }
+  function classes(o){
+    var r = o.ambiguous ? 1 : 0, out = [];
+    [["upper", SETS.upper[r]], ["lower", SETS.lower[r]], ["digits", SETS.digits[r]], ["special", o.symbols]]
+      .forEach(function(x){
+        if (!o[x[0]]) return;
+        var pool = Array.from(x[1]).filter(function(c){ return o.exclude.indexOf(c) < 0; }).join("");
+        if (pool) out.push(pool);
+      });
+    return out;
+  }
+  function generate(o){
+    var cls = classes(o);
+    if (!cls.length) return null;
+    var alpha = uniq(cls.join("")), chars = [];
+    if (o.each && cls.length <= o.len) cls.forEach(function(c){ chars.push(pick(c)); });
+    while (chars.length < o.len) chars.push(pick(alpha));
+    return { pw: shuffle(chars).join(""), bits: Math.floor(o.len * Math.log2(alpha.length || 1)) };
+  }
+
+  function paint(pw){
+    pwEl.textContent = "";
+    Array.from(pw).forEach(function(c){
+      if (/[A-Za-z]/.test(c)) { pwEl.appendChild(document.createTextNode(c)); return; }
+      var s = document.createElement("span"); s.className = /[0-9]/.test(c) ? "d" : "s";
+      s.textContent = c; pwEl.appendChild(s);
+    });
+  }
+  function syncUrl(o){
+    var q = new URLSearchParams();
+    q.set("len", o.len);
+    FLAGS.forEach(function(k){ q.set(k, o[k] ? "on" : "off"); });
+    if (o.symbols !== DEF_SYMBOLS) q.set("symbols", o.symbols);
+    if (o.exclude) q.set("exclude", o.exclude);
+    try { history.replaceState(null, "", "?" + q.toString()); } catch (_) {}
+  }
+  function refresh(){
+    var o = readOpts(), r = generate(o);
+    if (!r){
+      current = ""; pwEl.textContent = "";
+      meta.className = "err";
+      meta.textContent = "Немає жодного символу. Увімкніть хоча б один набір або скоротіть список виключень.";
+      copyBtn.disabled = true; return;
+    }
+    current = r.pw; paint(r.pw);
+    meta.className = "meta"; meta.textContent = "Ентропія ≈ " + r.bits + " біт";
+    copyBtn.disabled = false;
+    syncUrl(o);
+  }
+
+  // Параметри з URL, сумісні з random.org (?len=25&format=html&rnd=new) + розширені
+  function applyUrl(){
+    var q = new URLSearchParams(location.search);
+    if (q.has("len")) { lenN.value = q.get("len"); }
+    FLAGS.forEach(function(k){ if (q.has(k)) form.elements[k].checked = /^(on|1|true|yes)$/i.test(q.get(k)); });
+    if (q.has("symbols") && q.get("symbols").trim()) form.elements.symbols.value = q.get("symbols");
+    if (q.has("exclude")) form.elements.exclude.value = q.get("exclude");
+    var v = Math.max(MIN_LEN, Math.min(MAX_LEN, parseInt(lenN.value, 10) || 25));
+    lenN.value = v; lenR.value = Math.min(64, v);
+  }
+
+  // Копіювання — лише plain text
+  function writePlain(text){
+    if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text);
+    var ta = document.createElement("textarea"); ta.value = text; ta.setAttribute("readonly", "");
+    ta.style.position = "fixed"; ta.style.opacity = "0"; document.body.appendChild(ta); ta.select();
+    document.execCommand("copy"); document.body.removeChild(ta); return Promise.resolve();
+  }
+  function copyNow(){
+    if (!current) return;
+    writePlain(current).then(function(){
+      copyBtn.textContent = "Скопійовано"; copyBtn.classList.add("done");
+      setTimeout(function(){ copyBtn.textContent = "Копіювати"; copyBtn.classList.remove("done"); }, 1300);
+    });
+  }
+  copyBtn.addEventListener("click", copyNow);
+  pwEl.addEventListener("click", copyNow);
+  document.addEventListener("copy", function(e){
+    var s = String(document.getSelection());
+    if (s){ e.clipboardData.setData("text/plain", s); e.preventDefault(); }
+  });
+
+  var timer;
+  lenR.addEventListener("input", function(){ lenN.value = lenR.value; });
+  lenN.addEventListener("input", function(){ lenR.value = Math.min(64, lenN.value || 0); });
+  form.addEventListener("input", function(){ clearTimeout(timer); timer = setTimeout(refresh, 120); });
+  document.getElementById("gen").addEventListener("click", refresh);
+
+  applyUrl();
+  refresh();
+})();
+</script></body></html>
