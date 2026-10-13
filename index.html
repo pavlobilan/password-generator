@@ -252,11 +252,15 @@ input.text{width:260px;max-width:100%;padding:7px 10px;border:1px solid var(--li
     });
   }
   function syncUrl(o){
-    var q = new URLSearchParams();
-    q.set("len", o.len);
-    FLAGS.forEach(function(k){ q.set(k, o[k] ? "on" : "off"); });
-    q.set("symbols", o.symbols);
-    try { history.replaceState(null, "", "?" + q.toString()); } catch (_) {}
+    // Кодуємо лише те, що інакше зламає URL: # % & + пробіл і не-ASCII
+    function enc(v){
+      return encodeURIComponent(v).replace(/%(21|24|27|28|29|2A|2C|2F|3A|3B|3D|3F|40|5B|5D|5E|7B|7D|7C|7E)/gi,
+        function(m){ return decodeURIComponent(m); });
+    }
+    var parts = ["len=" + o.len];
+    FLAGS.forEach(function(k){ parts.push(k + "=" + (o[k] ? "on" : "off")); });
+    parts.push("symbols=" + enc(o.symbols));
+    try { history.replaceState(null, "", "?" + parts.join("&")); } catch (_) {}
   }
   function refresh(){
     var o = readOpts(), pw = generate(o);
