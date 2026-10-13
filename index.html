@@ -13,7 +13,7 @@
   --mono:"Cascadia Mono","JetBrains Mono","SF Mono",Consolas,"DejaVu Sans Mono",monospace;
   --sans:"Segoe UI Variable Text","Segoe UI",system-ui,-apple-system,Roboto,sans-serif;
 }
-:root{color-scheme:light;--gap:72px}
+:root{color-scheme:light;--gap:72px;--lblw:104px}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;
   --page:#0F151B; --panel:#18212A; --well:#121A21; --ink:#E4EAF0; --mute:#8D9AA7; --line:#2A3540;
   --accent:#7C9BFF; --accent-ink:#0F151B; --digit:#46C6B2; --sym:#F08A5D;
@@ -61,8 +61,8 @@ h1{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;
 .err{margin:0;padding:0 20px 14px;color:var(--sym);font-size:14px}
 .err:empty{display:none}
 
-.opts{margin:var(--gap) 0 0;padding:0 30px;display:grid;grid-template-columns:150px 1fr;gap:18px 16px;align-items:center}
-.lbl{color:var(--mute);font-size:14px}
+.opts{margin:var(--gap) 0 0;padding:0 30px;display:grid;grid-template-columns:var(--lblw) 1fr;gap:18px 16px;align-items:center}
+.lbl{color:var(--mute);font-size:14px;white-space:nowrap}
 .num{display:flex;align-items:center;gap:16px}
 input[type=number]{width:72px;padding:6px 8px;text-align:center;border:1px solid var(--line);border-radius:8px;
   background:var(--panel);color:var(--ink);font:500 15px var(--mono)}
@@ -81,7 +81,7 @@ input.text{width:260px;max-width:100%;padding:7px 10px;border:1px solid var(--li
   color:var(--ink);font:15px var(--mono)}
 .reveal{grid-column:1/-1;display:grid;grid-template-rows:0fr;opacity:0;margin-top:-18px}
 .reveal.on{grid-template-rows:1fr;opacity:1;margin-top:0}
-.reveal>.inner{min-height:0;overflow:hidden;display:grid;grid-template-columns:150px 1fr;gap:16px;align-items:center;padding:3px 0;margin:-3px 0}
+.reveal>.inner{min-height:0;overflow:hidden;display:grid;grid-template-columns:var(--lblw) 1fr;gap:16px;align-items:center;padding:3px 0;margin:-3px 0}
 .ready .reveal{transition:grid-template-rows .28s ease,opacity .22s ease,margin-top .28s ease}
 @media (max-width:560px){
   main{padding-top:max(20px, calc(50vh - 60px));padding-top:max(20px, calc(50dvh - 60px))}
