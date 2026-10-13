@@ -26,14 +26,16 @@ h1{font-size:20px;font-weight:600;letter-spacing:-.01em;margin:0 0 20px}
 .row{display:flex;align-items:center;gap:12px;padding:16px 12px 16px 20px}
 .pw{flex:1;min-width:0;font:500 21px/1.35 var(--mono);letter-spacing:.04em;word-break:break-all;cursor:copy}
 .pw .d{color:var(--digit)} .pw .s{color:var(--sym)}
-.copy{flex:none;width:112px;padding:7px 0;border:1px solid var(--line);border-radius:8px;background:var(--panel);
-  color:var(--ink);font:500 13px var(--sans);cursor:pointer}
-.copy:hover{border-color:var(--accent);color:var(--accent)}
-.copy.done{background:var(--digit);border-color:var(--digit);color:var(--panel)}
-.copy:disabled{opacity:.5;cursor:default}
-.bar{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center;padding:12px;background:var(--well);border-top:1px solid var(--line)}
-.btn{padding:8px 16px;border:0;border-radius:8px;background:var(--accent);color:var(--accent-ink);font:600 14px var(--sans);cursor:pointer}
-.err{margin:0;flex-basis:100%;text-align:center;color:var(--sym);font-size:14px}
+.ibtn{flex:none;display:grid;place-items:center;width:42px;height:42px;padding:0;border:1px solid var(--line);border-radius:10px;
+  background:var(--panel);color:var(--mute);cursor:pointer}
+.ibtn:hover{border-color:var(--accent);color:var(--accent)}
+.ibtn:active svg{transform:scale(.9)}
+.ibtn:disabled{opacity:.45;cursor:default}
+.ibtn .i-ok{display:none}
+.ibtn.done{background:var(--digit);border-color:var(--digit);color:var(--panel)}
+.ibtn.done .i-ok{display:block} .ibtn.done .i-copy{display:none}
+.row .ibtn+.ibtn{margin-left:-4px}
+.err{margin:0;padding:0 20px 14px;color:var(--sym);font-size:14px}
 .err:empty{display:none}
 
 .opts{margin-top:28px;display:grid;grid-template-columns:150px 1fr;gap:18px 16px;align-items:center}
@@ -62,8 +64,6 @@ input.text{width:260px;max-width:100%;padding:7px 10px;border:1px solid var(--li
   main{padding-top:24px}
   .row{padding:12px 10px 12px 14px}
   .pw{font-size:16px}
-  .copy{width:auto;padding:7px 10px}
-  .bar{padding:12px 14px}
   .opts{grid-template-columns:1fr;gap:6px}
   .opts>div{margin-bottom:12px}
   .num input[type=range]{flex:1;width:auto}
@@ -71,7 +71,7 @@ input.text{width:260px;max-width:100%;padding:7px 10px;border:1px solid var(--li
   .reveal{margin-top:-6px}
   .reveal>.inner{grid-template-columns:1fr;gap:6px}
 }
-@media (prefers-reduced-motion:no-preference){.copy{transition:background .15s,color .15s,border-color .15s}}
+@media (prefers-reduced-motion:no-preference){.ibtn{transition:background .15s,color .15s,border-color .15s}}
 @media (prefers-reduced-motion:reduce){.ready .reveal{transition:none}}
 </style></head><body><main>
 <h1>Генератор паролів</h1>
@@ -79,12 +79,10 @@ input.text{width:260px;max-width:100%;padding:7px 10px;border:1px solid var(--li
 <section class="out" aria-live="polite">
   <div class="row">
     <span class="pw" id="pw" title="Натисніть, щоб скопіювати"></span>
-    <button type="button" class="copy" id="copy">Копіювати</button>
+    <button type="button" class="ibtn" id="gen" title="Згенерувати новий" aria-label="Згенерувати новий"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v5h-5"/></svg></button>
+    <button type="button" class="ibtn" id="copy" title="Копіювати" aria-label="Копіювати"><svg class="i-copy" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg><svg class="i-ok" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button>
   </div>
-  <div class="bar">
-    <p class="err" id="err"></p>
-    <button type="button" class="btn" id="gen">Згенерувати</button>
-  </div>
+  <p class="err" id="err"></p>
 </section>
 
 <form id="f" class="opts" autocomplete="off" onsubmit="return false">
@@ -212,8 +210,9 @@ input.text{width:260px;max-width:100%;padding:7px 10px;border:1px solid var(--li
   function copyNow(){
     if (!current) return;
     writePlain(current).then(function(){
-      copyBtn.textContent = "Скопійовано"; copyBtn.classList.add("done");
-      setTimeout(function(){ copyBtn.textContent = "Копіювати"; copyBtn.classList.remove("done"); }, 1300);
+      copyBtn.classList.add("done"); copyBtn.title = "Скопійовано";
+      clearTimeout(copyBtn._t);
+      copyBtn._t = setTimeout(function(){ copyBtn.classList.remove("done"); copyBtn.title = "Копіювати"; }, 1300);
     });
   }
   copyBtn.addEventListener("click", copyNow);
@@ -227,7 +226,13 @@ input.text{width:260px;max-width:100%;padding:7px 10px;border:1px solid var(--li
   lenR.addEventListener("input", function(){ lenN.value = lenR.value; });
   lenN.addEventListener("input", function(){ lenR.value = Math.min(64, lenN.value || 0); });
   form.addEventListener("input", function(){ clearTimeout(timer); timer = setTimeout(refresh, 120); });
-  document.getElementById("gen").addEventListener("click", refresh);
+  var genBtn = document.getElementById("gen"),
+      calm = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  genBtn.addEventListener("click", function(){
+    refresh();
+    var svg = genBtn.querySelector("svg");
+    if (!calm && svg.animate) svg.animate([{transform:"rotate(0)"},{transform:"rotate(360deg)"}], {duration:350, easing:"ease"});
+  });
 
   var symRow = document.getElementById("symrow"), special = form.elements.special;
   function toggleSymbols(){
