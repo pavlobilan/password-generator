@@ -36,7 +36,7 @@ h1{font-size:20px;font-weight:600;letter-spacing:-.01em;margin:0}
 
 .out{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden}
 .row{display:flex;align-items:center;gap:12px;padding:16px 12px 16px 20px}
-.pw{flex:1;min-width:0;font:500 21px/1.35 var(--mono);letter-spacing:.04em;word-break:break-all;cursor:copy}
+.pw{flex:1;min-width:0;font:500 21px/1.35 var(--mono);letter-spacing:.04em;word-break:break-all;cursor:copy;-webkit-user-select:all;user-select:all}
 .pw .d{color:var(--digit)} .pw .s{color:var(--sym)}
 .ibtn{flex:none;display:grid;place-items:center;width:42px;height:42px;padding:0;border:1px solid var(--line);border-radius:10px;
   background:var(--panel);color:var(--mute);cursor:pointer}
@@ -233,7 +233,14 @@ input.text{width:260px;max-width:100%;padding:7px 10px;border:1px solid var(--li
     });
   }
   copyBtn.addEventListener("click", copyNow);
-  pwEl.addEventListener("click", copyNow);
+  // Одинарний і подвійний клік: виділити весь пароль і скопіювати
+  function selectAll(){
+    var sel = window.getSelection(), r = document.createRange();
+    r.selectNodeContents(pwEl); sel.removeAllRanges(); sel.addRange(r);
+  }
+  pwEl.addEventListener("mousedown", function(e){ if (e.detail > 1) e.preventDefault(); });
+  pwEl.addEventListener("click", function(){ if (!current) return; selectAll(); copyNow(); });
+  pwEl.addEventListener("dblclick", function(e){ e.preventDefault(); if (!current) return; selectAll(); copyNow(); });
   document.addEventListener("copy", function(e){
     var s = String(document.getSelection());
     if (s){ e.clipboardData.setData("text/plain", s); e.preventDefault(); }
