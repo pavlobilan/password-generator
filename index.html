@@ -68,6 +68,16 @@ h1{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;
 .opts{margin:var(--gap) 0 0;padding:0 30px;display:grid;grid-template-columns:var(--lblw) 1fr;gap:18px 16px;align-items:center}
 .lbl{color:var(--mute);font-size:14px;white-space:nowrap}
 .num{display:flex;align-items:center;gap:16px}
+.stepper{position:relative;display:inline-flex;flex:none}
+input[type=number]{-moz-appearance:textfield;appearance:textfield}
+input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.stepper input[type=number]{padding-right:30px;text-align:center}
+.spin{position:absolute;top:1px;right:1px;bottom:1px;width:28px;display:flex;flex-direction:column;border-left:1px solid var(--line)}
+.sp{flex:1;display:grid;place-items:center;padding:0;border:0;background:transparent;color:var(--mute);cursor:pointer;touch-action:manipulation}
+.sp:first-child{border-bottom:1px solid var(--line);border-top-right-radius:7px}
+.sp:last-child{border-bottom-right-radius:7px}
+.sp:hover{color:var(--accent);background:var(--well)}
+.sp:active{background:var(--line)}
 input[type=number]{width:72px;padding:6px 8px;text-align:center;border:1px solid var(--line);border-radius:8px;
   background:var(--panel);color:var(--ink);font:500 15px var(--mono)}
 input[type=range]{width:220px;accent-color:var(--accent)}
@@ -88,26 +98,16 @@ input.text{width:260px;max-width:100%;padding:7px 10px;border:1px solid var(--li
 .reveal>.inner{min-height:0;overflow:hidden;display:grid;grid-template-columns:var(--lblw) 1fr;gap:16px;align-items:center;padding:3px 0;margin:-3px 0}
 .ready .reveal{transition:grid-template-rows .28s ease,opacity .22s ease,margin-top .28s ease}
 @media (min-width:561px){
-  :root{--lblw:124px}
-  .opts{gap:22px 18px}
-  .lbl{font-size:16.5px}
-  input[type=number]{width:88px;padding:9px 10px;font-size:18px;border-radius:10px}
-  input[type=range]{width:300px;height:22px}
-  .chips{gap:8px}
-  .chip span{min-width:78px;padding:9px 16px;font-size:16.5px;border-radius:10px}
-  .check{gap:10px;font-size:17px}
-  .check input{width:19px;height:19px;margin-top:3px}
-  .check small{font-size:14px}
-  input.text{width:320px;padding:10px 13px;font-size:17.5px;border-radius:10px}
-  .reveal>.inner{gap:18px}
-}
-@media (min-width:561px){
   :root{--lblw:132px}
   .cardwrap,.opts{--gap:60px}
   .opts{gap:20px 20px;font-size:16px;padding:0 20px 0 30px}
   .lbl{font-size:16px}
   .num{gap:20px}
   input[type=number]{width:88px;padding:9px 8px;border-radius:10px;font-size:18px}
+  .stepper input[type=number]{padding-right:34px}
+  .spin{width:32px}
+  .sp:first-child{border-top-right-radius:9px}
+  .sp:last-child{border-bottom-right-radius:9px}
   input[type=range]{flex:1;width:auto;height:22px}
   .chips{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
   .chip span{display:block;min-width:0;padding:10px 12px;border-radius:10px;font-size:17px}
@@ -171,7 +171,7 @@ input.text{width:260px;max-width:100%;padding:7px 10px;border:1px solid var(--li
 
 <form id="f" class="opts" autocomplete="off" onsubmit="return false">
   <label class="lbl" for="len">Довжина</label>
-  <div class="num"><input type="number" name="len" id="len" min="4" max="128" value="25">
+  <div class="num"><span class="stepper"><input type="number" name="len" id="len" min="4" max="128" value="25" inputmode="numeric"><span class="spin"><button type="button" class="sp" data-d="1" tabindex="-1" aria-label="Більше"><svg viewBox="0 0 12 8" width="12" height="8" aria-hidden="true"><path d="M1 7l5-5 5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" class="sp" data-d="-1" tabindex="-1" aria-label="Менше"><svg viewBox="0 0 12 8" width="12" height="8" aria-hidden="true"><path d="M1 1l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></span></span>
     <input type="range" id="lenr" min="4" max="64" value="25" aria-label="Довжина"></div>
   <span class="lbl">Символи</span>
   <div class="chips">
@@ -320,6 +320,22 @@ input.text{width:260px;max-width:100%;padding:7px 10px;border:1px solid var(--li
   var timer;
   lenR.addEventListener("input", function(){ lenN.value = lenR.value; });
   lenN.addEventListener("input", function(){ lenR.value = Math.min(64, lenN.value || 0); });
+  // Власні кнопки ▲▼ для довжини (з автоповтором при утриманні)
+  function step(d){
+    var v = Math.max(MIN_LEN, Math.min(MAX_LEN, (parseInt(lenN.value, 10) || DEF_LEN) + d));
+    if (String(v) === lenN.value) return;
+    lenN.value = v; lenN.dispatchEvent(new Event("input", {bubbles: true}));
+  }
+  [].forEach.call(document.querySelectorAll(".sp"), function(btn){
+    var d = +btn.dataset.d, t1, t2;
+    function stop(){ clearTimeout(t1); clearInterval(t2); }
+    btn.addEventListener("pointerdown", function(e){
+      e.preventDefault(); step(d);
+      t1 = setTimeout(function(){ t2 = setInterval(function(){ step(d); }, 70); }, 400);
+    });
+    ["pointerup","pointerleave","pointercancel"].forEach(function(ev){ btn.addEventListener(ev, stop); });
+    btn.addEventListener("keydown", function(e){ if (e.key === "Enter" || e.key === " ") { e.preventDefault(); step(d); } });
+  });
   form.addEventListener("input", function(){ clearTimeout(timer); timer = setTimeout(refresh, 120); });
   var genBtn = document.getElementById("gen"),
       calm = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
