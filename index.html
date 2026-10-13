@@ -54,6 +54,10 @@ input[type=range]{width:220px;accent-color:var(--accent)}
 .check code{font-family:var(--mono)}
 input.text{width:260px;max-width:100%;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);
   color:var(--ink);font:15px var(--mono)}
+.reveal{grid-column:1/-1;display:grid;grid-template-rows:0fr;opacity:0;margin-top:-18px}
+.reveal.on{grid-template-rows:1fr;opacity:1;margin-top:0}
+.reveal>.inner{min-height:0;overflow:hidden;display:grid;grid-template-columns:150px 1fr;gap:16px;align-items:center;padding:3px 0;margin:-3px 0}
+.ready .reveal{transition:grid-template-rows .28s ease,opacity .22s ease,margin-top .28s ease}
 @media (max-width:560px){
   main{padding-top:24px}
   .row{padding:12px 10px 12px 14px}
@@ -64,8 +68,11 @@ input.text{width:260px;max-width:100%;padding:7px 10px;border:1px solid var(--li
   .opts>div{margin-bottom:12px}
   .num input[type=range]{flex:1;width:auto}
   input.text{width:100%}
+  .reveal{margin-top:-6px}
+  .reveal>.inner{grid-template-columns:1fr;gap:6px}
 }
 @media (prefers-reduced-motion:no-preference){.copy{transition:background .15s,color .15s,border-color .15s}}
+@media (prefers-reduced-motion:reduce){.ready .reveal{transition:none}}
 </style></head><body><main>
 <h1>Генератор паролів</h1>
 
@@ -96,8 +103,10 @@ input.text{width:260px;max-width:100%;padding:7px 10px;border:1px solid var(--li
     <label class="check"><input type="checkbox" name="ambiguous" checked>
       <span>Читабельний набір<small>Без <code>I O Q l o 0 1</code></small></span></label>
   </div>
-  <label class="lbl" for="symbols">Спецсимволи</label>
-  <div><input class="text" type="text" name="symbols" id="symbols" value="!#%+@:=?*" spellcheck="false"></div>
+  <div class="reveal" id="symrow"><div class="inner">
+    <label class="lbl" for="symbols">Спецсимволи</label>
+    <div><input class="text" type="text" name="symbols" id="symbols" value="!#%+@:=?*" spellcheck="false"></div>
+  </div></div>
 </form>
 </main>
 <script>
@@ -220,7 +229,17 @@ input.text{width:260px;max-width:100%;padding:7px 10px;border:1px solid var(--li
   form.addEventListener("input", function(){ clearTimeout(timer); timer = setTimeout(refresh, 120); });
   document.getElementById("gen").addEventListener("click", refresh);
 
+  var symRow = document.getElementById("symrow"), special = form.elements.special;
+  function toggleSymbols(){
+    symRow.classList.toggle("on", special.checked);
+    symRow.inert = !special.checked;
+    symRow.setAttribute("aria-hidden", special.checked ? "false" : "true");
+  }
+  special.addEventListener("change", toggleSymbols);
+
   applyUrl();
+  toggleSymbols();
   refresh();
+  requestAnimationFrame(function(){ requestAnimationFrame(function(){ document.body.classList.add("ready"); }); });
 })();
 </script></body></html>
