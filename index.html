@@ -189,11 +189,10 @@ input.text{width:260px;max-width:100%;padding:7px 10px;border:1px solid var(--li
   }
   function syncUrl(o){
     var q = new URLSearchParams();
-    if (o.len !== DEF_LEN) q.set("len", o.len);
-    FLAGS.forEach(function(k){ if (o[k] !== DEF_FLAGS[k]) q.set(k, o[k] ? "on" : "off"); });
-    if (o.symbols !== DEF_SYMBOLS) q.set("symbols", o.symbols);
-    var s = q.toString();
-    try { history.replaceState(null, "", s ? "?" + s : location.pathname); } catch (_) {}
+    q.set("len", o.len);
+    FLAGS.forEach(function(k){ q.set(k, o[k] ? "on" : "off"); });
+    q.set("symbols", o.symbols);
+    try { history.replaceState(null, "", "?" + q.toString()); } catch (_) {}
   }
   function refresh(){
     var o = readOpts(), pw = generate(o);
