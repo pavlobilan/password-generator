@@ -88,19 +88,22 @@ input.text{width:260px;max-width:100%;padding:7px 10px;border:1px solid var(--li
 .reveal>.inner{min-height:0;overflow:hidden;display:grid;grid-template-columns:var(--lblw) 1fr;gap:16px;align-items:center;padding:3px 0;margin:-3px 0}
 .ready .reveal{transition:grid-template-rows .28s ease,opacity .22s ease,margin-top .28s ease}
 @media (max-width:560px){
-  main{padding-top:max(20px, calc(50vh - 60px));padding-top:max(20px, calc(50dvh - 60px))}
+  html,body{height:100%}
+  main{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;justify-content:center;padding:52px 16px 16px}
+  .stack{width:100%}
   .row{padding:16px 12px 16px 18px;gap:10px}
   .ibtn{width:48px;height:48px;border-radius:12px}
   .ibtn svg{width:22px;height:22px}
   .toast{font-size:17px;padding:12px 26px}
-  .cardwrap,.opts{--gap:64px}
+  .cardwrap,.opts{--gap:44px}
   .pw{font-size:21px}
-  .opts{grid-template-columns:1fr;gap:6px;padding:0 18px}
-  .opts>div{margin-bottom:12px}
+  .opts{grid-template-columns:1fr;gap:4px;padding:0 18px}
+  .opts>div{margin-bottom:10px}
+  .opts>div:last-child{margin-bottom:0}
   .num input[type=range]{flex:1;width:auto}
   input.text{width:100%}
-  .reveal{margin-top:-6px}
-  .reveal>.inner{grid-template-columns:1fr;gap:6px}
+  .reveal{margin-top:-4px}
+  .reveal>.inner{grid-template-columns:1fr;gap:4px}
 }
 @media (prefers-reduced-motion:no-preference){.ibtn{transition:background .15s,color .15s,border-color .15s}}
 @media (prefers-reduced-motion:reduce){.ready .reveal{transition:none}}
