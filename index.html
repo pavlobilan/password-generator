@@ -95,8 +95,6 @@ input.text{width:260px;max-width:100%;padding:7px 10px;border:1px solid var(--li
   <div class="checks">
     <label class="check"><input type="checkbox" name="ambiguous" checked>
       <span>Читабельний набір<small>Без <code>I O Q l o 0 1</code>, як у Windows LAPS</small></span></label>
-    <label class="check"><input type="checkbox" name="each" checked>
-      <span>Кожен тип хоча б раз<small>Для політик складності паролів</small></span></label>
   </div>
   <label class="lbl" for="symbols">Спецсимволи</label>
   <div><input class="text" type="text" name="symbols" id="symbols" value="!#%+@:=?*" spellcheck="false"></div>
@@ -114,7 +112,7 @@ input.text{width:260px;max-width:100%;padding:7px 10px;border:1px solid var(--li
     digits: ["0123456789", "23456789"]
   };
   var MIN_LEN = 4, MAX_LEN = 128, DEF_SYMBOLS = "!#%+@:=?*";
-  var FLAGS = ["upper","lower","digits","special","ambiguous","each"];
+  var FLAGS = ["upper","lower","digits","special","ambiguous"];
 
   var form = document.getElementById("f"), pwEl = document.getElementById("pw"),
       meta = document.getElementById("meta"), copyBtn = document.getElementById("copy"),
@@ -142,6 +140,7 @@ input.text{width:260px;max-width:100%;padding:7px 10px;border:1px solid var(--li
     o.symbols = uniq(Array.from(form.elements.symbols.value).filter(function(c){
       return /\S/.test(c) && !/[A-Za-z0-9]/.test(c); }).join(""));
     o.exclude = form.elements.exclude.value;
+    o.each = true; // кожен увімкнений тип символів — хоча б раз
     return o;
   }
   function classes(o){
