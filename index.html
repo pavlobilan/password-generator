@@ -65,7 +65,8 @@ h1{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;
 .err{margin:0;padding:0 20px 14px;color:var(--sym);font-size:14px}
 .err:empty{display:none}
 
-.opts{margin:var(--gap) 0 0;padding:0 30px;display:grid;grid-template-columns:var(--lblw) 1fr;gap:18px 16px;align-items:center}
+.opts{--rg:18px;margin:var(--gap) 0 0;padding:0 30px;display:grid;grid-template-columns:1fr;gap:0;align-items:center}
+.opts>*+*{margin-top:var(--rg)}
 .lbl{color:var(--mute);font-size:14px;white-space:nowrap}
 .num{display:flex;align-items:center;gap:16px}
 .stepper{position:relative;display:inline-flex;flex:none}
@@ -93,14 +94,14 @@ input[type=range]{width:220px;accent-color:var(--accent)}
 .check code{font-family:var(--mono)}
 input.text{width:260px;max-width:100%;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);
   color:var(--ink);font:15px var(--mono)}
-.reveal{grid-column:1/-1;display:grid;grid-template-rows:0fr;opacity:0;margin-top:-18px}
-.reveal.on{grid-template-rows:1fr;opacity:1;margin-top:0}
+.reveal{grid-column:1/-1;display:grid;grid-template-rows:0fr;opacity:0;margin-top:0}
+.reveal.on{grid-template-rows:1fr;opacity:1;margin-top:var(--rg)}
 .reveal>.inner{min-height:0;overflow:hidden;display:grid;grid-template-columns:var(--lblw) 1fr;gap:16px;align-items:center;padding:3px 0;margin:-3px 0}
 .ready .reveal{transition:grid-template-rows .28s ease,opacity .22s ease,margin-top .28s ease}
 @media (min-width:561px){
   :root{--lblw:132px}
   .cardwrap,.opts{--gap:60px}
-  .opts{gap:20px 20px;font-size:16px;padding:0 20px 0 30px}
+  .opts{--rg:20px;font-size:16px;padding:0 20px 0 30px}
   .lbl{font-size:16px}
   .num{gap:20px}
   input[type=number]{width:88px;padding:9px 8px;border-radius:10px;font-size:18px}
@@ -132,19 +133,17 @@ input.text{width:260px;max-width:100%;padding:7px 10px;border:1px solid var(--li
   .toast{font-size:16px;padding:10px 24px}
   .cardwrap,.opts{--gap:60px}
   .pw{font-size:21px}
-  .opts{grid-template-columns:1fr;gap:0;padding:0 18px}
-  .lbl{margin:12px 0 4px}
-  .opts>.lbl:first-child{margin-top:0}
+  .opts{--rg:14px;padding:0 18px}
+  .reveal .lbl{margin:0 0 4px}
   .num input[type=range]{flex:1;width:auto}
   input.text{width:100%}
-  .reveal,.reveal.on{margin-top:0}
   .reveal>.inner{grid-template-columns:1fr;gap:0}
 }
 @media (max-width:560px) and (max-height:600px){
   main{padding-top:40px}
   .cardwrap,.opts{--gap:54px}
   .pw{font-size:19px}
-  .lbl{margin:10px 0 3px}
+  .opts{--rg:11px}
 }
 @media (prefers-reduced-motion:no-preference){.ibtn{transition:background .15s,color .15s,border-color .15s}}
 @media (prefers-reduced-motion:reduce){.ready .reveal{transition:none}}
@@ -170,17 +169,14 @@ input.text{width:260px;max-width:100%;padding:7px 10px;border:1px solid var(--li
 </div>
 
 <form id="f" class="opts" autocomplete="off" onsubmit="return false">
-  <label class="lbl" for="len">Довжина</label>
-  <div class="num"><span class="stepper"><input type="number" name="len" id="len" min="4" max="128" value="25" inputmode="numeric"><span class="spin"><button type="button" class="sp" data-d="1" tabindex="-1" aria-label="Більше"><svg viewBox="0 0 12 8" width="12" height="8" aria-hidden="true"><path d="M1 7l5-5 5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" class="sp" data-d="-1" tabindex="-1" aria-label="Менше"><svg viewBox="0 0 12 8" width="12" height="8" aria-hidden="true"><path d="M1 1l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></span></span>
+  <div class="num"><span class="stepper"><input type="number" name="len" id="len" min="4" max="128" value="25" inputmode="numeric" aria-label="Довжина"><span class="spin"><button type="button" class="sp" data-d="1" tabindex="-1" aria-label="Більше"><svg viewBox="0 0 12 8" width="12" height="8" aria-hidden="true"><path d="M1 7l5-5 5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" class="sp" data-d="-1" tabindex="-1" aria-label="Менше"><svg viewBox="0 0 12 8" width="12" height="8" aria-hidden="true"><path d="M1 1l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></span></span>
     <input type="range" id="lenr" min="4" max="64" value="25" aria-label="Довжина"></div>
-  <span class="lbl">Символи</span>
-  <div class="chips">
+  <div class="chips" role="group" aria-label="Символи">
     <label class="chip"><input type="checkbox" name="upper" checked><span>A–Z</span></label>
     <label class="chip"><input type="checkbox" name="lower" checked><span>a–z</span></label>
     <label class="chip"><input type="checkbox" name="digits" checked><span>0–9</span></label>
     <label class="chip"><input type="checkbox" name="special"><span>!#%</span></label>
   </div>
-  <span class="lbl">Правила</span>
   <div>
     <label class="check"><input type="checkbox" name="ambiguous" checked>
       <span>Читабельний набір<small>Без <code>I O Q l o 0 1</code></small></span></label>
