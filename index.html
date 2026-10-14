@@ -162,19 +162,15 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 .check input:checked::before{transform:translateX(16px)}
 .check input:focus-visible{outline:none;box-shadow:0 0 0 3px var(--ring)}
 .check>span{padding-top:1px}
-.toggles{display:flex;flex-wrap:wrap;align-items:center;gap:12px 14px}
-.extra{width:170px;max-width:100%;padding:7px 12px;border:1px dashed var(--line);border-radius:10px;background:transparent;
-  color:var(--ink);font:600 17px var(--mono);letter-spacing:.14em;opacity:0;visibility:hidden;transform:translateX(-6px)}
-.extra::placeholder{color:var(--mute);letter-spacing:normal;font-weight:500;font-family:var(--sans);font-size:15px}
-.extra:focus-visible{outline:none;border-style:solid;border-color:var(--accent);box-shadow:0 0 0 3px var(--ring)}
-.toggles.on .extra{opacity:1;visibility:visible;transform:none}
-@media (prefers-reduced-motion:no-preference){.extra{transition:opacity .2s ease,transform .2s ease,visibility 0s linear .2s}
-  .toggles.on .extra{transition:opacity .2s ease,transform .2s ease,visibility 0s}}
+.toggles{display:flex;align-items:center;gap:12px}
+input.glyphs{-webkit-appearance:none;appearance:none;box-sizing:content-box;flex:none;margin:0;padding:0;border:0;border-radius:0;
+  background:transparent;font:600 18px/21px var(--mono);height:21px;letter-spacing:.14em;color:var(--ink);
+  width:calc(var(--n,9) * (1ch + .14em));min-width:1ch;max-width:calc(100% - 60px);outline:none;box-shadow:none;cursor:text}
+input.glyphs[readonly]{color:var(--mute);opacity:.6;cursor:pointer}
+input.glyphs:not([readonly]):hover{box-shadow:0 3px 0 -1px var(--line)}
+input.glyphs:not([readonly]):focus{box-shadow:0 3px 0 -1px var(--accent)}
 .check{align-items:center}
-.check>span.glyphs{padding:0;font:600 18px/1 var(--mono);letter-spacing:.14em;margin-right:-.14em;color:var(--ink);
-}
-.check input:not(:checked)+.glyphs.x-off{color:var(--mute);opacity:.6}
-@media (prefers-reduced-motion:no-preference){.glyphs{transition:color .18s ease,opacity .18s ease}}
+@media (prefers-reduced-motion:no-preference){input.glyphs{transition:color .18s ease,opacity .18s ease,box-shadow .15s ease}}
 @media (min-width:561px){
   .check input{width:44px;height:26px}
   .check input::before{width:20px;height:20px}
@@ -212,8 +208,7 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
   <div class="num"><span class="stepper"><input type="number" name="len" id="len" min="4" max="128" value="25" inputmode="numeric" aria-label="Довжина"><span class="spin"><button type="button" class="sp" data-d="1" tabindex="-1" aria-label="Більше"><svg viewBox="0 0 12 8" width="12" height="8" aria-hidden="true"><path d="M1 7l5-5 5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" class="sp" data-d="-1" tabindex="-1" aria-label="Менше"><svg viewBox="0 0 12 8" width="12" height="8" aria-hidden="true"><path d="M1 1l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></span></span>
     <input type="range" id="lenr" min="4" max="64" value="25" aria-label="Довжина"></div>
   <div class="toggles" id="toggles">
-    <label class="check" title="Спецсимволи"><input type="checkbox" name="special" aria-label="Спецсимволи"><span class="glyphs x-off" aria-hidden="true">!#%+@:=?*</span></label>
-    <input type="text" class="extra" id="extra" name="extra" placeholder="+ свої" maxlength="40" spellcheck="false" autocomplete="off" autocapitalize="off" aria-label="Додаткові спецсимволи" tabindex="-1">
+    <label class="check" title="Спецсимволи"><input type="checkbox" name="special" aria-label="Спецсимволи"></label><input type="text" class="glyphs" id="symbols" value="!#%+@:=?*" readonly tabindex="-1" maxlength="40" spellcheck="false" autocomplete="off" autocapitalize="off" aria-label="Набір спецсимволів">
   </div>
 </form>
 </div>
@@ -248,19 +243,31 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
   }
   function uniq(s){ return Array.from(new Set(Array.from(s))).join(""); }
 
-  // Власні спецсимволи: лише друковані, не літери/цифри, без пробілів і повторів
-  var special = form.elements.special, extra = document.getElementById("extra"), toggles = document.getElementById("toggles");
+  // Набір спецсимволів редагується на місці: лише друковані, не літери/цифри, без пробілів і повторів
+  var special = form.elements.special, symIn = document.getElementById("symbols");
   function cleanExtra(v){
     return uniq(Array.from(v).filter(function(c){ return /\S/.test(c) && !/[\p{L}\p{N}]/u.test(c) && c.charCodeAt(0) > 31; }).join(""));
   }
+  function fitSym(){ symIn.style.setProperty("--n", Math.max(1, Array.from(symIn.value).length)); }
   function syncExtra(){
-    toggles.classList.toggle("on", special.checked);
-    extra.tabIndex = special.checked ? 0 : -1;
+    symIn.readOnly = !special.checked;
+    symIn.tabIndex = special.checked ? 0 : -1;
+    if (!special.checked && document.activeElement === symIn) symIn.blur();
   }
   special.addEventListener("change", syncExtra);
-  extra.addEventListener("input", function(){
-    var c = Array.from(cleanExtra(extra.value)).filter(function(ch){ return DEF_SYMBOLS.indexOf(ch) < 0; }).join("");
-    if (c !== extra.value) { var p = extra.selectionStart; extra.value = c; try { extra.setSelectionRange(Math.min(p, c.length), Math.min(p, c.length)); } catch (_) {} }
+  symIn.addEventListener("click", function(){
+    if (special.checked) return;
+    special.checked = true; syncExtra();
+    form.dispatchEvent(new Event("input"));
+    symIn.focus(); var n = symIn.value.length; try { symIn.setSelectionRange(n, n); } catch (_) {}
+  });
+  symIn.addEventListener("input", function(){
+    var c = cleanExtra(symIn.value);
+    if (c !== symIn.value) { var p = symIn.selectionStart; symIn.value = c; try { symIn.setSelectionRange(Math.min(p, c.length), Math.min(p, c.length)); } catch (_) {} }
+    fitSym();
+  });
+  symIn.addEventListener("blur", function(){
+    if (!cleanExtra(symIn.value)) { symIn.value = DEF_SYMBOLS; fitSym(); refresh(); }
   });
   function readOpts(){
     var o = {};
@@ -268,7 +275,7 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
     FLAGS.forEach(function(k){ o[k] = form.elements[k].checked; });
     var n = parseInt(lenN.value, 10);
     o.len = isNaN(n) ? DEF_LEN : Math.max(MIN_LEN, Math.min(MAX_LEN, n));
-    o.symbols = special.checked ? uniq(DEF_SYMBOLS + cleanExtra(extra.value)) : DEF_SYMBOLS;
+    o.symbols = cleanExtra(symIn.value);
     return o;
   }
   function classes(o){
@@ -404,7 +411,8 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
     ["pointerup","pointerleave","pointercancel"].forEach(function(ev){ btn.addEventListener(ev, stop); });
     btn.addEventListener("keydown", function(e){ if (e.key === "Enter" || e.key === " ") { e.preventDefault(); step(d); } });
   });
-  form.addEventListener("input", function(){ clearTimeout(timer); timer = setTimeout(refresh, 120); });
+  // Миттєва реакція (не частіше одного разу за кадр)
+  form.addEventListener("input", function(){ if (timer) return; timer = requestAnimationFrame(function(){ timer = 0; refresh(); }); });
   var genBtn = document.getElementById("gen"),
       calm = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
   genBtn.addEventListener("click", function(){
@@ -431,6 +439,7 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
   themeLabel();
 
   applyUrl();
+  fitSym();
   syncExtra();
   paintRange();
   refresh();
