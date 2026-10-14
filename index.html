@@ -426,10 +426,10 @@ input.glyphs:not([readonly]):focus{border-color:var(--accent);box-shadow:0 0 0 3
   var genBtn = document.getElementById("gen"),
       calm = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
   // «Рулетка»: символи швидко перебираються й зупиняються зліва направо на новому паролі
-  var lastAlpha = "", rollId = 0;
+  var lastAlpha = "", rollId = 0, ROLL_MS = 260;
   function stopRoll(){ if (rollId) { cancelAnimationFrame(rollId); rollId = 0; } }
   function roll(final){
-    var n = final.length, start = performance.now(), DUR = 260, last = 0, alpha = lastAlpha || final;
+    var n = final.length, start = performance.now(), DUR = ROLL_MS, last = 0, alpha = lastAlpha || final;
     function frame(now){
       var t = now - start;
       if (t >= DUR) { rollId = 0; paint(final); return; }
@@ -447,7 +447,7 @@ input.glyphs:not([readonly]):focus{border-color:var(--accent);box-shadow:0 0 0 3
     refresh();
     if (!calm && current) roll(current);
     var svg = genBtn.querySelector("svg");
-    if (!calm && svg.animate) svg.animate([{transform:"rotate(0)"},{transform:"rotate(360deg)"}], {duration:350, easing:"ease"});
+    if (!calm && svg.animate) svg.animate([{transform:"rotate(0)"},{transform:"rotate(360deg)"}], {duration:ROLL_MS, easing:"ease-out"});
   });
 
 
