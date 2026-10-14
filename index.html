@@ -429,17 +429,14 @@ input.glyphs:not([readonly]):focus{border-color:var(--accent);box-shadow:0 0 0 3
   var lastAlpha = "", rollId = 0;
   function stopRoll(){ if (rollId) { cancelAnimationFrame(rollId); rollId = 0; } }
   function roll(final){
-    var n = final.length, start = performance.now(), DUR = 520, HEAD = 140, last = 0, alpha = lastAlpha || final;
+    var n = final.length, start = performance.now(), DUR = 260, last = 0, alpha = lastAlpha || final;
     function frame(now){
       var t = now - start;
       if (t >= DUR) { rollId = 0; paint(final); return; }
-      if (now - last >= 35) {
+      if (now - last >= 30) {
         last = now;
         var out = "";
-        for (var i = 0; i < n; i++) {
-          var settle = HEAD + (DUR - HEAD) * (i + 1) / n;
-          out += t >= settle ? final[i] : alpha[Math.floor(Math.random() * alpha.length)];
-        }
+        for (var i = 0; i < n; i++) out += alpha[Math.floor(Math.random() * alpha.length)];
         paint(out);
       }
       rollId = requestAnimationFrame(frame);
