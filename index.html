@@ -142,8 +142,8 @@ input.text{width:260px;max-width:100%;padding:7px 10px;border:1px solid var(--li
 .cardwrap{isolation:isolate}
 .out{position:relative;box-shadow:var(--shadow);border:3px solid transparent;
   background:linear-gradient(var(--panel),var(--panel)) padding-box,linear-gradient(var(--c1),var(--c1)) border-box}
-.cardwrap::before{content:"";position:absolute;inset:-2px;z-index:-1;border-radius:20px;pointer-events:none;
-  background:var(--c1);filter:blur(16px);opacity:calc(var(--glow) * .6)}
+.cardwrap::before{content:"";position:absolute;inset:4px;z-index:-1;border-radius:18px;pointer-events:none;
+  background:var(--c1);filter:blur(14px);opacity:calc(var(--glow) * .3)}
 .meter{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 @media (prefers-reduced-motion:no-preference){.cardwrap{transition:--c1 .4s ease}}
 input[type=number]:focus-visible,input.text:focus-visible{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--ring)}
