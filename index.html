@@ -452,14 +452,17 @@ input.glyphs:not([readonly]):focus{border-color:var(--accent);box-shadow:0 0 0 3
 
   // Тема: системна → світла → темна
   var themeBtn = document.getElementById("theme"), root = document.documentElement,
-      ORDER = ["system", "light", "dark"], NAMES = {system:"системна", light:"світла", dark:"темна"};
+      NAMES = {system:"системна", light:"світла", dark:"темна"},
+      sysMq = window.matchMedia ? matchMedia("(prefers-color-scheme: dark)") : null;
+  // Із системної — спершу на протилежну до поточної системної, далі по колу
+  function themeOrder(){ return sysMq && sysMq.matches ? ["system", "light", "dark"] : ["system", "dark", "light"]; }
   function themeLabel(){
     var t = root.getAttribute("data-theme") || "system", l = "Тема: " + NAMES[t];
     themeBtn.setAttribute("aria-label", l);
   }
   themeBtn.addEventListener("click", function(){
     var cur = root.getAttribute("data-theme") || "system",
-        next = ORDER[(ORDER.indexOf(cur) + 1) % ORDER.length];
+        order = themeOrder(), next = order[(order.indexOf(cur) + 1) % order.length];
     if (next === "system") root.removeAttribute("data-theme"); else root.setAttribute("data-theme", next);
     try { if (next === "system") localStorage.removeItem("theme"); else localStorage.setItem("theme", next); } catch (_) {}
     themeLabel();
