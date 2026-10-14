@@ -94,10 +94,6 @@ input[type=range]{width:220px;accent-color:var(--accent)}
 .check code{font-family:var(--mono)}
 input.text{width:260px;max-width:100%;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);
   color:var(--ink);font:15px var(--mono)}
-.reveal{grid-column:1/-1;display:grid;grid-template-rows:0fr;opacity:0;margin-top:0}
-.reveal.on{grid-template-rows:1fr;opacity:1;margin-top:var(--rg)}
-.reveal>.inner{min-height:0;overflow:hidden;display:grid;grid-template-columns:var(--lblw) 1fr;gap:16px;align-items:center;padding:3px 0;margin:-3px 0}
-.ready .reveal{transition:grid-template-rows .28s ease,opacity .22s ease,margin-top .28s ease}
 @media (min-width:561px){
   :root{--lblw:132px}
   .cardwrap,.opts{--gap:60px}
@@ -116,7 +112,6 @@ input.text{width:260px;max-width:100%;padding:7px 10px;border:1px solid var(--li
   .check input{width:18px;height:18px;margin-top:3px}
   .check small{font-size:14px}
   input.text{width:100%;padding:10px 14px;border-radius:10px;font-size:17px}
-  .reveal>.inner{gap:20px}
 }
 @media (max-width:560px){
   html,body{height:100%}
@@ -124,9 +119,6 @@ input.text{width:260px;max-width:100%;padding:7px 10px;border:1px solid var(--li
   main::before{content:"";flex:2 1 0}
   main::after{content:"";flex:1 1 0}
   .stack{width:100%;display:flex;flex-direction:column}
-  .opts{order:-1;margin:0 0 var(--gap)}
-  .toast{top:auto;bottom:calc(100% + var(--gap) / 2);transform:translate(-50%,calc(50% + 6px))}
-  .toast.show{transform:translate(-50%,50%)}
   .row{padding:16px 12px 16px 18px;gap:10px}
   .ibtn{width:48px;height:48px;border-radius:12px}
   .ibtn svg{width:22px;height:22px}
@@ -134,10 +126,8 @@ input.text{width:260px;max-width:100%;padding:7px 10px;border:1px solid var(--li
   .cardwrap,.opts{--gap:60px}
   .pw{font-size:21px}
   .opts{--rg:14px;padding:0 18px}
-  .reveal .lbl{margin:0 0 4px}
   .num input[type=range]{flex:1;width:auto}
   input.text{width:100%}
-  .reveal>.inner{grid-template-columns:1fr;gap:0}
 }
 @media (max-width:560px) and (max-height:600px){
   main{padding-top:40px}
@@ -146,10 +136,13 @@ input.text{width:260px;max-width:100%;padding:7px 10px;border:1px solid var(--li
   .opts{--rg:11px}
 }
 /* --- Елементи керування та глибина --- */
-:root{--shadow:0 1px 2px rgba(23,33,43,.05),0 14px 34px -14px rgba(23,33,43,.22);--ring:rgba(47,85,200,.22);--knob:#fff}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--shadow:0 1px 2px rgba(0,0,0,.4),0 18px 40px -16px rgba(0,0,0,.7);--ring:rgba(124,155,255,.28);--knob:#E4EAF0}}
-:root[data-theme="dark"]{--shadow:0 1px 2px rgba(0,0,0,.4),0 18px 40px -16px rgba(0,0,0,.7);--ring:rgba(124,155,255,.28);--knob:#E4EAF0}
+:root{--shadow:0 1px 2px rgba(23,33,43,.05),0 14px 34px -14px rgba(23,33,43,.22);--ring:rgba(47,85,200,.22);--knob:#fff;--tint:rgba(47,85,200,.08);--ml:44%}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--shadow:0 1px 2px rgba(0,0,0,.4),0 18px 40px -16px rgba(0,0,0,.7);--ring:rgba(124,155,255,.28);--knob:#E4EAF0;--tint:rgba(124,155,255,.13);--ml:58%}}
+:root[data-theme="dark"]{--shadow:0 1px 2px rgba(0,0,0,.4),0 18px 40px -16px rgba(0,0,0,.7);--ring:rgba(124,155,255,.28);--knob:#E4EAF0;--tint:rgba(124,155,255,.13);--ml:58%}
 .out{box-shadow:var(--shadow)}
+.meter{height:6px;background:var(--well)}
+.meter>i{display:block;height:100%;width:0;background:hsl(0 75% var(--ml));border-radius:0 3px 3px 0}
+@media (prefers-reduced-motion:no-preference){.meter>i{transition:width .4s ease,background-color .4s ease}}
 input[type=number]:focus-visible,input.text:focus-visible{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--ring)}
 
 input[type=range]{-webkit-appearance:none;appearance:none;height:28px;margin:0;background:transparent;cursor:pointer;--p:30%}
@@ -163,11 +156,14 @@ input[type=range]::-moz-range-track{height:6px;border-radius:999px;background:va
 input[type=range]::-moz-range-progress{height:6px;border-radius:999px;background:var(--accent)}
 input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--knob);border:2px solid var(--accent);box-shadow:0 1px 4px rgba(0,0,0,.18)}
 
-.chips{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;padding:3px;border:1px solid var(--line);border-radius:12px;background:var(--well)}
-.chip span{display:block;min-width:0;border:0;border-radius:9px;background:transparent;color:var(--mute)}
-.chip span:hover{color:var(--ink)}
-.chip input:checked+span{background:var(--accent);color:var(--accent-ink);box-shadow:0 1px 3px rgba(23,33,43,.18)}
-.chip input:focus-visible+span{outline:2px solid var(--accent);outline-offset:1px}
+.chips{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:0;border:0;background:none}
+.chip span{display:flex;align-items:center;justify-content:center;gap:8px;min-width:0;border:1px solid var(--line);border-radius:10px;
+  background:var(--panel);color:var(--mute);box-shadow:none}
+.chip span::before{content:"";flex:none;width:9px;height:9px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--line)}
+.chip span:hover{border-color:var(--mute);color:var(--ink)}
+.chip input:checked+span{border-color:var(--accent);background:var(--tint);color:var(--ink)}
+.chip input:checked+span::before{background:var(--accent);box-shadow:0 0 0 3px var(--tint)}
+.chip input:focus-visible+span{outline:2px solid var(--accent);outline-offset:2px}
 
 .check{align-items:flex-start;gap:12px}
 .check input{-webkit-appearance:none;appearance:none;position:relative;flex:none;width:40px;height:24px;margin:0;border-radius:999px;
@@ -179,19 +175,18 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 .check input:focus-visible{outline:none;box-shadow:0 0 0 3px var(--ring)}
 .check>span{padding-top:1px}
 @media (min-width:561px){
-  .chip span{padding:9px 12px}
+  .chip span{padding:10px 12px}
   .check input{width:44px;height:26px}
   .check input::before{width:20px;height:20px}
   .check input:checked::before{transform:translateX(18px)}
 }
 @media (max-width:560px){
-  .chip span{padding:7px 4px}
+  .chip span{padding:8px 4px;gap:6px}
 }
 @media (prefers-reduced-motion:no-preference){
   .check input,.check input::before,.chip span{transition:background .18s ease,transform .18s ease,color .15s ease}
 }
 @media (prefers-reduced-motion:no-preference){.ibtn{transition:background .15s,color .15s,border-color .15s}}
-@media (prefers-reduced-motion:reduce){.ready .reveal{transition:none}}
 </style></head><body><main>
 <div class="head"><h1>Генератор паролів</h1>
   <button type="button" class="theme" id="theme" title="Тема: системна" aria-label="Тема: системна">
@@ -209,6 +204,7 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
     <button type="button" class="ibtn" id="copy" title="Копіювати" aria-label="Копіювати"><svg class="i-copy" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg><svg class="i-ok" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button>
   </div>
   <p class="err" id="err"></p>
+  <div class="meter" id="meter" role="meter" aria-label="Надійність пароля" aria-valuemin="0" aria-valuemax="100"><i></i></div>
 </section>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </div>
@@ -226,10 +222,6 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
     <label class="check"><input type="checkbox" name="ambiguous" checked>
       <span>Читабельний набір<small>Без <code>I O Q l o 0 1</code></small></span></label>
   </div>
-  <div class="reveal" id="symrow"><div class="inner">
-    <label class="lbl" for="symbols">Спецсимволи</label>
-    <div><input class="text" type="text" name="symbols" id="symbols" value="!#%+@:=?*" spellcheck="false"></div>
-  </div></div>
 </form>
 </div>
 </main>
@@ -268,8 +260,7 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
     FLAGS.forEach(function(k){ o[k] = form.elements[k].checked; });
     var n = parseInt(lenN.value, 10);
     o.len = isNaN(n) ? DEF_LEN : Math.max(MIN_LEN, Math.min(MAX_LEN, n));
-    o.symbols = uniq(Array.from(form.elements.symbols.value).filter(function(c){
-      return /\S/.test(c) && !/[A-Za-z0-9]/.test(c); }).join(""));
+    o.symbols = DEF_SYMBOLS;
     return o;
   }
   function classes(o){
@@ -296,6 +287,32 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
       s.textContent = c; pwEl.appendChild(s);
     });
   }
+  // Надійність: мінімум із оцінки довжини (NIST SP 800-63B-4, CISA) та ентропії; після 25 символів не змінюється
+  function lerp(pts, x){
+    if (x <= pts[0][0]) return pts[0][1];
+    for (var i = 1; i < pts.length; i++) if (x <= pts[i][0]) {
+      var a = pts[i-1], b = pts[i]; return a[1] + (b[1] - a[1]) * (x - a[0]) / (b[0] - a[0]);
+    }
+    return pts[pts.length-1][1];
+  }
+  var LEN_PTS = [[0,0],[8,.15],[12,.35],[15,.6],[16,.66],[20,.83],[25,1]];
+  var BIT_PTS = [[0,0],[40,.15],[60,.35],[80,.6],[100,.8],[128,1]];
+  function strength(o){
+    var n = uniq(classes(o).join("")).length, L = Math.min(o.len, 25);
+    if (n < 2) return 0;
+    return Math.min(lerp(LEN_PTS, L), lerp(BIT_PTS, L * Math.log2(n)));
+  }
+  var meter = document.getElementById("meter"), meterBar = meter.firstElementChild;
+  function showStrength(v){
+    // 0 → червоний (0°), 0.5 → помаранчевий (32°), 1 → зелений (135°)
+    var h = v <= .5 ? v / .5 * 32 : 32 + (v - .5) / .5 * 103,
+        label = v < .35 ? "слабкий" : v < .6 ? "середній" : v < .85 ? "сильний" : "надійний";
+    meterBar.style.width = Math.max(4, v * 100) + "%";
+    meterBar.style.backgroundColor = "hsl(" + h.toFixed(1) + " 75% var(--ml))";
+    meter.setAttribute("aria-valuenow", Math.round(v * 100));
+    meter.setAttribute("aria-valuetext", label);
+    meter.title = "Надійність: " + label;
+  }
   function syncUrl(o){
     var parts = ["len=" + o.len];
     FLAGS.forEach(function(k){ parts.push(k + "=" + (o[k] ? "on" : "off")); });
@@ -306,19 +323,19 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
     if (!pw){
       current = ""; pwEl.textContent = "";
       errEl.textContent = "Увімкніть хоча б один набір символів.";
-      copyBtn.disabled = true; return;
+      copyBtn.disabled = true; showStrength(0); return;
     }
     current = pw; paint(pw);
     errEl.textContent = ""; copyBtn.disabled = false;
+    showStrength(strength(o));
     syncUrl(o);
   }
 
-  // Параметри з URL: len, upper, lower, digits, special, ambiguous, symbols
+  // Параметри з URL: len, upper, lower, digits, special, ambiguous
   function applyUrl(){
     var q = new URLSearchParams(location.search);
     if (q.has("len")) lenN.value = q.get("len");
     FLAGS.forEach(function(k){ if (q.has(k)) form.elements[k].checked = /^(on|1|true|yes)$/i.test(q.get(k)); });
-    if (q.has("symbols") && q.get("symbols").trim()) form.elements.symbols.value = q.get("symbols");
     var v = Math.max(MIN_LEN, Math.min(MAX_LEN, parseInt(lenN.value, 10) || DEF_LEN));
     lenN.value = v; lenR.value = Math.min(64, v);
   }
@@ -388,13 +405,6 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
     if (!calm && svg.animate) svg.animate([{transform:"rotate(0)"},{transform:"rotate(360deg)"}], {duration:350, easing:"ease"});
   });
 
-  var symRow = document.getElementById("symrow"), special = form.elements.special;
-  function toggleSymbols(){
-    symRow.classList.toggle("on", special.checked);
-    symRow.inert = !special.checked;
-    symRow.setAttribute("aria-hidden", special.checked ? "false" : "true");
-  }
-  special.addEventListener("change", toggleSymbols);
 
   // Тема: системна → світла → темна
   var themeBtn = document.getElementById("theme"), root = document.documentElement,
@@ -414,7 +424,6 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 
   applyUrl();
   paintRange();
-  toggleSymbols();
   refresh();
   requestAnimationFrame(function(){ requestAnimationFrame(function(){ document.body.classList.add("ready"); }); });
 })();
