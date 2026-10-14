@@ -169,12 +169,13 @@ input.glyphs{-webkit-appearance:none;appearance:none;box-sizing:content-box;flex
 input.glyphs[readonly]{color:var(--mute);opacity:.6;cursor:pointer}
 input.glyphs:not([readonly]){border-color:var(--line);background:var(--panel);width:calc((var(--n,9) + 4) * (1ch + .14em))}
 .symwrap{position:relative;display:inline-flex;flex:none;max-width:calc(100% - 86px)}
-.caret{position:absolute;top:50%;left:calc(13px + var(--n,9) * (1ch + .14em));width:2px;height:22px;margin-top:-11px;border-radius:1px;
-  background:var(--accent);opacity:0;pointer-events:none;font:600 18px var(--mono)}
-.symwrap:has(input:not([readonly])) .caret{animation:caret 1.6s ease-in-out infinite}
+.caret{position:absolute;top:8px;left:calc(13px + var(--n,9) * (1ch + .14em));width:1px;height:21px;
+  background:var(--ink);opacity:0;pointer-events:none;font:600 18px var(--mono)}
+input.glyphs{caret-color:var(--ink)}
+.symwrap:has(input:not([readonly])) .caret{animation:caret 1s steps(1,end) infinite}
 .symwrap:has(input:not([readonly])):focus-within .caret{animation:none;opacity:0}
-@keyframes caret{0%,40%{opacity:.9}55%,90%{opacity:0}100%{opacity:.9}}
-@media (prefers-reduced-motion:reduce){.symwrap:has(input:not([readonly])) .caret{animation:none;opacity:.7}}
+@keyframes caret{0%{opacity:1}50%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.symwrap:has(input:not([readonly])) .caret{animation:none;opacity:1}}
 input.glyphs:not([readonly]):hover{border-color:var(--mute)}
 input.glyphs:not([readonly]):focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--ring)}
 .check{align-items:center}
