@@ -135,19 +135,23 @@ input.text{width:260px;max-width:100%;padding:7px 10px;border:1px solid var(--li
   .opts{--rg:11px}
 }
 /* --- Елементи керування та глибина --- */
-:root{--shadow:0 1px 2px rgba(23,33,43,.05),0 14px 34px -14px rgba(23,33,43,.22);--ring:rgba(47,85,200,.22);--knob:#fff;--tint:rgba(47,85,200,.08);--ml:44%;--chipon:#E3E9F8}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--shadow:0 1px 2px rgba(0,0,0,.4),0 18px 40px -16px rgba(0,0,0,.7);--ring:rgba(124,155,255,.28);--knob:#E4EAF0;--tint:rgba(124,155,255,.13);--ml:58%;--chipon:#253049}}
-:root[data-theme="dark"]{--shadow:0 1px 2px rgba(0,0,0,.4),0 18px 40px -16px rgba(0,0,0,.7);--ring:rgba(124,155,255,.28);--knob:#E4EAF0;--tint:rgba(124,155,255,.13);--ml:58%;--chipon:#253049}
+:root{--shadow:0 1px 2px rgba(23,33,43,.05),0 14px 34px -14px rgba(23,33,43,.22);--ring:rgba(47,85,200,.22);--knob:#fff;--tint:rgba(47,85,200,.08);--ml:44%;--chipon:#E3E9F8;--glow:.45}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--shadow:0 1px 2px rgba(0,0,0,.4),0 18px 40px -16px rgba(0,0,0,.7);--ring:rgba(124,155,255,.28);--knob:#E4EAF0;--tint:rgba(124,155,255,.13);--ml:58%;--chipon:#253049;--glow:.55}}
+:root[data-theme="dark"]{--shadow:0 1px 2px rgba(0,0,0,.4),0 18px 40px -16px rgba(0,0,0,.7);--ring:rgba(124,155,255,.28);--knob:#E4EAF0;--tint:rgba(124,155,255,.13);--ml:58%;--chipon:#253049;--glow:.55}
 @property --a{syntax:"<angle>";inherits:false;initial-value:0deg}
 @property --c1{syntax:"<color>";inherits:true;initial-value:#c43a1c}
 @property --c2{syntax:"<color>";inherits:true;initial-value:#f0a08a}
 @property --c3{syntax:"<color>";inherits:true;initial-value:#9a2a12}
-.out{box-shadow:var(--shadow);border:2px solid transparent;
+.cardwrap{isolation:isolate}
+.out{position:relative;box-shadow:var(--shadow);border:3px solid transparent;
   background:linear-gradient(var(--panel),var(--panel)) padding-box,
-    conic-gradient(from var(--a),var(--c1),var(--c2) 18%,var(--c1) 36%,var(--c3) 60%,var(--c1) 80%,var(--c2) 92%,var(--c1)) border-box}
+    conic-gradient(from var(--a),var(--c1),var(--c2) 14%,var(--c1) 30%,var(--c3) 55%,var(--c1) 72%,var(--c2) 86%,var(--c1)) border-box}
+.cardwrap::before{content:"";position:absolute;inset:-2px;z-index:-1;border-radius:20px;pointer-events:none;
+  background:conic-gradient(from var(--a),var(--c1),var(--c2) 14%,var(--c1) 30%,var(--c3) 55%,var(--c1) 72%,var(--c2) 86%,var(--c1));
+  filter:blur(16px);opacity:var(--glow)}
 @keyframes flow{to{--a:360deg}}
 .meter{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
-@media (prefers-reduced-motion:no-preference){.out{animation:flow 4s linear infinite;transition:--c1 .4s ease,--c2 .4s ease,--c3 .4s ease}}
+@media (prefers-reduced-motion:no-preference){.out,.cardwrap::before{animation:flow 3s linear infinite}.cardwrap{transition:--c1 .4s ease,--c2 .4s ease,--c3 .4s ease}}
 input[type=number]:focus-visible,input.text:focus-visible{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--ring)}
 
 input[type=range]{-webkit-appearance:none;appearance:none;height:28px;margin:0;background:transparent;cursor:pointer;--p:30%}
@@ -307,15 +311,15 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
     if (n < 2) return 0;
     return Math.min(lerp(LEN_PTS, L), lerp(BIT_PTS, L * Math.log2(n)));
   }
-  var meter = document.getElementById("meter"), card = document.querySelector(".out");
+  var meter = document.getElementById("meter"), card = document.querySelector(".cardwrap");
   function showStrength(v){
     // 0 → червоний (0°), 0.5 → помаранчевий (32°), 1 → зелений (135°)
     var h = v <= .5 ? v / .5 * 32 : 32 + (v - .5) / .5 * 103,
         label = v < .35 ? "слабкий" : v < .6 ? "середній" : v < .85 ? "сильний" : "надійний";
     var hh = h.toFixed(1);
     card.style.setProperty("--c1", "hsl(" + hh + " 75% var(--ml))");
-    card.style.setProperty("--c2", "hsl(" + (h + 14).toFixed(1) + " 90% calc(var(--ml) + 22%))");
-    card.style.setProperty("--c3", "hsl(" + (h - 8).toFixed(1) + " 70% calc(var(--ml) - 10%))");
+    card.style.setProperty("--c2", "hsl(" + (h + 18).toFixed(1) + " 100% calc(var(--ml) + 30%))");
+    card.style.setProperty("--c3", "hsl(" + (h - 10).toFixed(1) + " 80% calc(var(--ml) - 14%))");
     card.title = "Надійність: " + label;
     meter.setAttribute("aria-valuenow", Math.round(v * 100));
     meter.setAttribute("aria-valuetext", label);
