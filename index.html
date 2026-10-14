@@ -163,14 +163,15 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 .check input:focus-visible{outline:none;box-shadow:0 0 0 3px var(--ring)}
 .check>span{padding-top:1px}
 .toggles{display:flex;align-items:center;gap:12px}
-input.glyphs{-webkit-appearance:none;appearance:none;box-sizing:content-box;flex:none;margin:0;padding:0;border:0;border-radius:0;
-  background:transparent;font:600 18px/21px var(--mono);height:21px;letter-spacing:.14em;color:var(--ink);
-  width:calc(var(--n,9) * (1ch + .14em));min-width:1ch;max-width:calc(100% - 60px);outline:none;box-shadow:none;cursor:text}
+input.glyphs{-webkit-appearance:none;appearance:none;box-sizing:content-box;flex:none;margin:0;padding:7px 12px;
+  border:1px solid transparent;border-radius:10px;background:transparent;font:600 18px/21px var(--mono);height:21px;letter-spacing:.14em;color:var(--ink);
+  width:calc(var(--n,9) * (1ch + .14em));min-width:1ch;max-width:calc(100% - 86px);outline:none;box-shadow:none;cursor:text}
 input.glyphs[readonly]{color:var(--mute);opacity:.6;cursor:pointer}
-input.glyphs:not([readonly]):hover{box-shadow:0 3px 0 -1px var(--line)}
-input.glyphs:not([readonly]):focus{box-shadow:0 3px 0 -1px var(--accent)}
+input.glyphs:not([readonly]){border-color:var(--line);background:var(--panel)}
+input.glyphs:not([readonly]):hover{border-color:var(--mute)}
+input.glyphs:not([readonly]):focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--ring)}
 .check{align-items:center}
-@media (prefers-reduced-motion:no-preference){input.glyphs{transition:color .18s ease,opacity .18s ease,box-shadow .15s ease}}
+@media (prefers-reduced-motion:no-preference){input.glyphs{transition:color .18s ease,opacity .18s ease,background-color .18s ease,border-color .18s ease,box-shadow .15s ease}}
 @media (min-width:561px){
   .check input{width:44px;height:26px}
   .check input::before{width:20px;height:20px}
