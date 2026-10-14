@@ -163,6 +163,11 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 .check input:focus-visible{outline:none;box-shadow:0 0 0 3px var(--ring)}
 .check>span{padding-top:1px}
 .toggles{display:flex;flex-wrap:wrap;gap:12px 36px}
+.check{align-items:center}
+.check>span.glyphs{padding:0;font:600 18px/1 var(--mono);letter-spacing:.14em;margin-right:-.14em;color:var(--ink);
+  text-decoration:line-through;text-decoration-thickness:2px;text-decoration-color:transparent}
+.check input:not(:checked)+.glyphs.x-off,.check input:checked+.glyphs.x-on{color:var(--mute);text-decoration-color:var(--sym);opacity:.75}
+@media (prefers-reduced-motion:no-preference){.glyphs{transition:color .18s ease,text-decoration-color .18s ease,opacity .18s ease}}
 @media (min-width:561px){
   .check input{width:44px;height:26px}
   .check input::before{width:20px;height:20px}
@@ -200,8 +205,8 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
   <div class="num"><span class="stepper"><input type="number" name="len" id="len" min="4" max="128" value="25" inputmode="numeric" aria-label="Довжина"><span class="spin"><button type="button" class="sp" data-d="1" tabindex="-1" aria-label="Більше"><svg viewBox="0 0 12 8" width="12" height="8" aria-hidden="true"><path d="M1 7l5-5 5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" class="sp" data-d="-1" tabindex="-1" aria-label="Менше"><svg viewBox="0 0 12 8" width="12" height="8" aria-hidden="true"><path d="M1 1l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></span></span>
     <input type="range" id="lenr" min="4" max="64" value="25" aria-label="Довжина"></div>
   <div class="toggles">
-    <label class="check" title="!#%+@:=?*"><input type="checkbox" name="special"><span>Спецсимволи</span></label>
-    <label class="check" title="Без I O Q l o 0 1"><input type="checkbox" name="ambiguous" checked><span>Читабельний набір</span></label>
+    <label class="check" title="Спецсимволи"><input type="checkbox" name="special" aria-label="Спецсимволи"><span class="glyphs x-off" aria-hidden="true">!#%+@:=?*</span></label>
+    <label class="check" title="Без схожих символів"><input type="checkbox" name="ambiguous" checked aria-label="Без схожих символів I O Q l o 0 1"><span class="glyphs x-on" aria-hidden="true">IOQlo01</span></label>
   </div>
 </form>
 </div>
