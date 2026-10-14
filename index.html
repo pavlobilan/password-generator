@@ -165,9 +165,16 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 .toggles{display:flex;align-items:center;gap:12px}
 input.glyphs{-webkit-appearance:none;appearance:none;box-sizing:content-box;flex:none;margin:0;padding:7px 12px;
   border:1px solid transparent;border-radius:10px;background:transparent;font:600 18px/21px var(--mono);height:21px;letter-spacing:.14em;color:var(--ink);
-  width:calc(var(--n,9) * (1ch + .14em));min-width:1ch;max-width:calc(100% - 86px);outline:none;box-shadow:none;cursor:text}
+  width:calc(var(--n,9) * (1ch + .14em));min-width:1ch;max-width:100%;outline:none;box-shadow:none;cursor:text}
 input.glyphs[readonly]{color:var(--mute);opacity:.6;cursor:pointer}
-input.glyphs:not([readonly]){border-color:var(--line);background:var(--panel)}
+input.glyphs:not([readonly]){border-color:var(--line);background:var(--panel);width:calc((var(--n,9) + 4) * (1ch + .14em))}
+.symwrap{position:relative;display:inline-flex;flex:none;max-width:calc(100% - 86px)}
+.caret{position:absolute;top:50%;left:calc(13px + var(--n,9) * (1ch + .14em));width:2px;height:22px;margin-top:-11px;border-radius:1px;
+  background:var(--accent);opacity:0;pointer-events:none;font:600 18px var(--mono)}
+.symwrap:has(input:not([readonly])) .caret{animation:caret 1.6s ease-in-out infinite}
+.symwrap:has(input:not([readonly])):focus-within .caret{animation:none;opacity:0}
+@keyframes caret{0%,40%{opacity:.9}55%,90%{opacity:0}100%{opacity:.9}}
+@media (prefers-reduced-motion:reduce){.symwrap:has(input:not([readonly])) .caret{animation:none;opacity:.7}}
 input.glyphs:not([readonly]):hover{border-color:var(--mute)}
 input.glyphs:not([readonly]):focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--ring)}
 .check{align-items:center}
@@ -209,7 +216,7 @@ input.glyphs:not([readonly]):focus{border-color:var(--accent);box-shadow:0 0 0 3
   <div class="num"><span class="stepper"><input type="number" name="len" id="len" min="4" max="128" value="25" inputmode="numeric" aria-label="Довжина"><span class="spin"><button type="button" class="sp" data-d="1" tabindex="-1" aria-label="Більше"><svg viewBox="0 0 12 8" width="12" height="8" aria-hidden="true"><path d="M1 7l5-5 5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" class="sp" data-d="-1" tabindex="-1" aria-label="Менше"><svg viewBox="0 0 12 8" width="12" height="8" aria-hidden="true"><path d="M1 1l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></span></span>
     <input type="range" id="lenr" min="4" max="64" value="25" aria-label="Довжина"></div>
   <div class="toggles" id="toggles">
-    <label class="check" title="Спецсимволи"><input type="checkbox" name="special" aria-label="Спецсимволи"></label><input type="text" class="glyphs" id="symbols" value="!#%+@:=?*" readonly tabindex="-1" maxlength="40" spellcheck="false" autocomplete="off" autocapitalize="off" aria-label="Набір спецсимволів">
+    <label class="check" title="Спецсимволи"><input type="checkbox" name="special" aria-label="Спецсимволи"></label><span class="symwrap" id="symwrap"><input type="text" class="glyphs" id="symbols" value="!#%+@:=?*" readonly tabindex="-1" maxlength="40" spellcheck="false" autocomplete="off" autocapitalize="off" aria-label="Набір спецсимволів"><i class="caret" aria-hidden="true"></i></span>
   </div>
 </form>
 </div>
@@ -249,7 +256,8 @@ input.glyphs:not([readonly]):focus{border-color:var(--accent);box-shadow:0 0 0 3
   function cleanExtra(v){
     return uniq(Array.from(v).filter(function(c){ return /\S/.test(c) && !/[\p{L}\p{N}]/u.test(c) && c.charCodeAt(0) > 31; }).join(""));
   }
-  function fitSym(){ symIn.style.setProperty("--n", Math.max(1, Array.from(symIn.value).length)); }
+  var symWrap = document.getElementById("symwrap");
+  function fitSym(){ symWrap.style.setProperty("--n", Math.max(1, Array.from(symIn.value).length)); }
   function syncExtra(){
     symIn.readOnly = !special.checked;
     symIn.tabIndex = special.checked ? 0 : -1;
