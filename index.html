@@ -191,6 +191,8 @@ input.glyphs:not([readonly]):focus{border-color:var(--accent);box-shadow:0 0 0 3
 @media (prefers-reduced-motion:no-preference){
   .check input,.check input::before{transition:background .18s ease,transform .18s ease}
 }
+::view-transition-old(root),::view-transition-new(root){animation-duration:.4s;animation-timing-function:ease}
+.theming,.theming *,.theming *::before,.theming *::after{transition:background-color .4s ease,color .4s ease,border-color .4s ease,box-shadow .4s ease,fill .4s ease,stroke .4s ease!important}
 @media (prefers-reduced-motion:no-preference){.ibtn{transition:background .15s,color .15s,border-color .15s}}
 </style></head><body><main>
 <div class="head"><h1>Password Generator</h1>
@@ -458,9 +460,18 @@ input.glyphs:not([readonly]):focus{border-color:var(--accent);box-shadow:0 0 0 3
   function themeLabel(){ themeBtn.setAttribute("aria-label", "Тема: " + NAMES[curTheme()]); }
   themeBtn.addEventListener("click", function(){
     var next = curTheme() === "dark" ? "light" : "dark";
-    root.setAttribute("data-theme", next);
-    try { localStorage.setItem("theme", next); } catch (_) {}
-    themeLabel();
+    function apply(){
+      root.setAttribute("data-theme", next);
+      try { localStorage.setItem("theme", next); } catch (_) {}
+      themeLabel();
+    }
+    // Плавна зміна теми: View Transitions (перехресне згасання), інакше — тимчасові CSS-переходи
+    if (calm) apply();
+    else if (document.startViewTransition) document.startViewTransition(apply);
+    else {
+      root.classList.add("theming"); apply();
+      clearTimeout(themeBtn._t); themeBtn._t = setTimeout(function(){ root.classList.remove("theming"); }, 450);
+    }
   });
   if (sysMq && sysMq.addEventListener) sysMq.addEventListener("change", themeLabel);
   themeLabel();
