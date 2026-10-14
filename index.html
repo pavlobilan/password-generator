@@ -191,6 +191,27 @@ input.glyphs:not([readonly]):focus{border-color:var(--accent);box-shadow:0 0 0 3
 @media (prefers-reduced-motion:no-preference){
   .check input,.check input::before{transition:background .18s ease,transform .18s ease}
 }
+@media (max-width:560px){
+  .num{gap:16px}
+  input[type=number]{width:104px;height:52px;padding:0 8px;border-radius:12px;font-size:21px}
+  .stepper input[type=number]{padding-right:42px}
+  .spin{width:40px}
+  .sp svg{width:16px;height:11px}
+  .sp:first-child{border-top-right-radius:11px}
+  .sp:last-child{border-bottom-right-radius:11px}
+  input[type=range]{height:44px}
+  input[type=range]::-webkit-slider-runnable-track{height:8px}
+  input[type=range]::-webkit-slider-thumb{width:30px;height:30px;margin-top:-11px}
+  input[type=range]::-moz-range-track,input[type=range]::-moz-range-progress{height:8px}
+  input[type=range]::-moz-range-thumb{width:26px;height:26px}
+  .toggles{gap:14px}
+  .check input{width:56px;height:32px}
+  .check input::before{top:4px;left:4px;width:24px;height:24px}
+  .check input:checked::before{transform:translateX(24px)}
+  input.glyphs{font-size:21px;line-height:24px;height:24px;padding:10px 14px;border-radius:12px}
+  .caret{top:11px;left:calc(15px + var(--n,9) * (1ch + .14em));height:24px;font-size:21px}
+  .opts{--rg:18px}
+}
 ::view-transition-old(root),::view-transition-new(root){animation-duration:.4s;animation-timing-function:ease}
 .theming,.theming *,.theming *::before,.theming *::after{transition:background-color .4s ease,color .4s ease,border-color .4s ease,box-shadow .4s ease,fill .4s ease,stroke .4s ease!important}
 @media (prefers-reduced-motion:no-preference){.ibtn{transition:background .15s,color .15s,border-color .15s}}
