@@ -162,7 +162,14 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 .check input:checked::before{transform:translateX(16px)}
 .check input:focus-visible{outline:none;box-shadow:0 0 0 3px var(--ring)}
 .check>span{padding-top:1px}
-.toggles{display:flex;flex-wrap:wrap;gap:12px 36px}
+.toggles{display:flex;flex-wrap:wrap;align-items:center;gap:12px 14px}
+.extra{width:170px;max-width:100%;padding:7px 12px;border:1px dashed var(--line);border-radius:10px;background:transparent;
+  color:var(--ink);font:600 17px var(--mono);letter-spacing:.14em;opacity:0;visibility:hidden;transform:translateX(-6px)}
+.extra::placeholder{color:var(--mute);letter-spacing:normal;font-weight:500;font-family:var(--sans);font-size:15px}
+.extra:focus-visible{outline:none;border-style:solid;border-color:var(--accent);box-shadow:0 0 0 3px var(--ring)}
+.toggles.on .extra{opacity:1;visibility:visible;transform:none}
+@media (prefers-reduced-motion:no-preference){.extra{transition:opacity .2s ease,transform .2s ease,visibility 0s linear .2s}
+  .toggles.on .extra{transition:opacity .2s ease,transform .2s ease,visibility 0s}}
 .check{align-items:center}
 .check>span.glyphs{padding:0;font:600 18px/1 var(--mono);letter-spacing:.14em;margin-right:-.14em;color:var(--ink);
 }
@@ -204,8 +211,9 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 <form id="f" class="opts" autocomplete="off" onsubmit="return false">
   <div class="num"><span class="stepper"><input type="number" name="len" id="len" min="4" max="128" value="25" inputmode="numeric" aria-label="Довжина"><span class="spin"><button type="button" class="sp" data-d="1" tabindex="-1" aria-label="Більше"><svg viewBox="0 0 12 8" width="12" height="8" aria-hidden="true"><path d="M1 7l5-5 5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" class="sp" data-d="-1" tabindex="-1" aria-label="Менше"><svg viewBox="0 0 12 8" width="12" height="8" aria-hidden="true"><path d="M1 1l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></span></span>
     <input type="range" id="lenr" min="4" max="64" value="25" aria-label="Довжина"></div>
-  <div class="toggles">
+  <div class="toggles" id="toggles">
     <label class="check" title="Спецсимволи"><input type="checkbox" name="special" aria-label="Спецсимволи"><span class="glyphs x-off" aria-hidden="true">!#%+@:=?*</span></label>
+    <input type="text" class="extra" id="extra" name="extra" placeholder="+ свої" maxlength="40" spellcheck="false" autocomplete="off" autocapitalize="off" aria-label="Додаткові спецсимволи" tabindex="-1">
   </div>
 </form>
 </div>
@@ -240,13 +248,27 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
   }
   function uniq(s){ return Array.from(new Set(Array.from(s))).join(""); }
 
+  // Власні спецсимволи: лише друковані, не літери/цифри, без пробілів і повторів
+  var special = form.elements.special, extra = document.getElementById("extra"), toggles = document.getElementById("toggles");
+  function cleanExtra(v){
+    return uniq(Array.from(v).filter(function(c){ return /\S/.test(c) && !/[\p{L}\p{N}]/u.test(c) && c.charCodeAt(0) > 31; }).join(""));
+  }
+  function syncExtra(){
+    toggles.classList.toggle("on", special.checked);
+    extra.tabIndex = special.checked ? 0 : -1;
+  }
+  special.addEventListener("change", syncExtra);
+  extra.addEventListener("input", function(){
+    var c = Array.from(cleanExtra(extra.value)).filter(function(ch){ return DEF_SYMBOLS.indexOf(ch) < 0; }).join("");
+    if (c !== extra.value) { var p = extra.selectionStart; extra.value = c; try { extra.setSelectionRange(Math.min(p, c.length), Math.min(p, c.length)); } catch (_) {} }
+  });
   function readOpts(){
     var o = {};
     o.upper = o.lower = o.digits = o.ambiguous = true;
     FLAGS.forEach(function(k){ o[k] = form.elements[k].checked; });
     var n = parseInt(lenN.value, 10);
     o.len = isNaN(n) ? DEF_LEN : Math.max(MIN_LEN, Math.min(MAX_LEN, n));
-    o.symbols = DEF_SYMBOLS;
+    o.symbols = special.checked ? uniq(DEF_SYMBOLS + cleanExtra(extra.value)) : DEF_SYMBOLS;
     return o;
   }
   function classes(o){
@@ -409,6 +431,7 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
   themeLabel();
 
   applyUrl();
+  syncExtra();
   paintRange();
   refresh();
   requestAnimationFrame(function(){ requestAnimationFrame(function(){ document.body.classList.add("ready"); }); });
