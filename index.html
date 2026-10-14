@@ -212,6 +212,11 @@ input.glyphs:not([readonly]):focus{border-color:var(--accent);box-shadow:0 0 0 3
   .caret{top:11px;left:calc(15px + var(--n,9) * (1ch + .14em));height:24px;font-size:21px}
   .opts{--rg:18px}
 }
+/* Підказки при наведенні (лише миша) */
+.tip{position:fixed;z-index:50;left:0;top:0;white-space:nowrap;padding:6px 10px;border-radius:8px;background:var(--ink);color:var(--page);
+  font:500 13px/1.25 var(--sans);box-shadow:0 4px 14px rgba(0,0,0,.18);pointer-events:none;opacity:0;transform:translateY(3px)}
+.tip.show{opacity:1;transform:none}
+@media (prefers-reduced-motion:no-preference){.tip{transition:opacity .15s ease,transform .15s ease}}
 ::view-transition-old(root),::view-transition-new(root){animation-duration:.4s;animation-timing-function:ease}
 .theming,.theming *,.theming *::before,.theming *::after{transition:background-color .4s ease,color .4s ease,border-color .4s ease,box-shadow .4s ease,fill .4s ease,stroke .4s ease!important}
 @media (prefers-reduced-motion:no-preference){.ibtn{transition:background .15s,color .15s,border-color .15s}}
@@ -226,9 +231,9 @@ input.glyphs:not([readonly]):focus{border-color:var(--accent);box-shadow:0 0 0 3
 <div class="cardwrap">
 <section class="out" aria-live="polite">
   <div class="row">
-    <span class="pw" id="pw"></span>
-    <button type="button" class="ibtn" id="gen" aria-label="Згенерувати новий"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v5h-5"/></svg></button>
-    <button type="button" class="ibtn" id="copy" aria-label="Копіювати"><svg class="i-copy" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg><svg class="i-ok" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button>
+    <span class="pw" id="pw" data-tip="Натисніть, щоб скопіювати"></span>
+    <button type="button" class="ibtn" id="gen" aria-label="Згенерувати новий" data-tip="Згенерувати новий"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v5h-5"/></svg></button>
+    <button type="button" class="ibtn" id="copy" aria-label="Копіювати" data-tip="Копіювати"><svg class="i-copy" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg><svg class="i-ok" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button>
   </div>
   <p class="err" id="err"></p>
   <div class="meter" id="meter" role="meter" aria-label="Надійність пароля" aria-valuemin="0" aria-valuemax="100"></div>
@@ -237,14 +242,15 @@ input.glyphs:not([readonly]):focus{border-color:var(--accent);box-shadow:0 0 0 3
 </div>
 
 <form id="f" class="opts" autocomplete="off" onsubmit="return false">
-  <div class="num"><span class="stepper"><input type="number" name="len" id="len" min="4" max="128" value="25" inputmode="numeric" aria-label="Довжина"><span class="spin"><button type="button" class="sp" data-d="1" tabindex="-1" aria-label="Більше"><svg viewBox="0 0 12 8" width="12" height="8" aria-hidden="true"><path d="M1 7l5-5 5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" class="sp" data-d="-1" tabindex="-1" aria-label="Менше"><svg viewBox="0 0 12 8" width="12" height="8" aria-hidden="true"><path d="M1 1l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></span></span>
-    <input type="range" id="lenr" min="4" max="64" value="25" aria-label="Довжина"></div>
+  <div class="num"><span class="stepper"><input type="number" name="len" id="len" min="4" max="128" value="25" inputmode="numeric" aria-label="Довжина" data-tip="Довжина пароля"><span class="spin"><button type="button" class="sp" data-d="1" tabindex="-1" aria-label="Більше" data-tip="Довше"><svg viewBox="0 0 12 8" width="12" height="8" aria-hidden="true"><path d="M1 7l5-5 5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" class="sp" data-d="-1" tabindex="-1" aria-label="Менше" data-tip="Коротше"><svg viewBox="0 0 12 8" width="12" height="8" aria-hidden="true"><path d="M1 1l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></span></span>
+    <input type="range" id="lenr" min="4" max="64" value="25" aria-label="Довжина" data-tip="Довжина пароля"></div>
   <div class="toggles" id="toggles">
-    <label class="check"><input type="checkbox" name="special" aria-label="Спецсимволи"></label><span class="symwrap" id="symwrap"><input type="text" class="glyphs" id="symbols" value="!#%+@:=?*" readonly tabindex="-1" maxlength="40" spellcheck="false" autocomplete="off" autocapitalize="off" aria-label="Набір спецсимволів"><i class="caret" aria-hidden="true"></i></span>
+    <label class="check" id="spectog"><input type="checkbox" name="special" aria-label="Спецсимволи"></label><span class="symwrap" id="symwrap"><input type="text" class="glyphs" id="symbols" value="!#%+@:=?*" readonly tabindex="-1" maxlength="40" spellcheck="false" autocomplete="off" autocapitalize="off" aria-label="Набір спецсимволів"><i class="caret" aria-hidden="true"></i></span>
   </div>
 </form>
 </div>
 </main>
+<div class="tip" id="tip" role="tooltip" aria-hidden="true"></div>
 <script>
 (function(){
   "use strict";
@@ -283,6 +289,8 @@ input.glyphs:not([readonly]):focus{border-color:var(--accent);box-shadow:0 0 0 3
   var symWrap = document.getElementById("symwrap");
   function fitSym(){ symWrap.style.setProperty("--n", Math.max(1, Array.from(symIn.value).length)); }
   function syncExtra(){
+    document.getElementById("spectog").setAttribute("data-tip", special.checked ? "Вимкнути спецсимволи" : "Увімкнути спецсимволи");
+    symIn.setAttribute("data-tip", special.checked ? "Можна дописати або прибрати символи" : "Натисніть, щоб увімкнути спецсимволи");
     symIn.readOnly = !special.checked;
     symIn.tabIndex = special.checked ? 0 : -1;
     if (!special.checked && document.activeElement === symIn) symIn.blur();
@@ -480,6 +488,7 @@ input.glyphs:not([readonly]):focus{border-color:var(--accent);box-shadow:0 0 0 3
   function curTheme(){ return root.getAttribute("data-theme") || (sysMq && sysMq.matches ? "dark" : "light"); }
   function themeLabel(){
     themeBtn.setAttribute("aria-label", "Тема: " + NAMES[curTheme()]);
+    themeBtn.setAttribute("data-tip", curTheme() === "dark" ? "Світла тема" : "Темна тема");
   }
   themeBtn.addEventListener("click", function(){
     var next = curTheme() === "dark" ? "light" : "dark";
@@ -499,6 +508,30 @@ input.glyphs:not([readonly]):focus{border-color:var(--accent);box-shadow:0 0 0 3
   if (sysMq && sysMq.addEventListener) sysMq.addEventListener("change", themeLabel);
   themeLabel();
 
+
+  // Підказки: одна плашка для всіх елементів з data-tip, з'являється через 0,4 с наведення мишею
+  (function(){
+    var tip = document.getElementById("tip"), cur = null, timer = 0;
+    function place(el){
+      var r = el.getBoundingClientRect(); tip.textContent = el.getAttribute("data-tip");
+      var tw = tip.offsetWidth, th = tip.offsetHeight, gap = 9;
+      var x = Math.min(Math.max(8, r.left + r.width / 2 - tw / 2), innerWidth - tw - 8);
+      var y = r.top - th - gap; if (y < 8) y = r.bottom + gap;
+      tip.style.left = x + "px"; tip.style.top = y + "px";
+    }
+    function hide(){ clearTimeout(timer); cur = null; tip.classList.remove("show"); }
+    document.addEventListener("pointerover", function(e){
+      if (e.pointerType !== "mouse") return;
+      var el = e.target.closest && e.target.closest("[data-tip]");
+      if (el === cur) return;
+      hide(); if (!el) return;
+      cur = el; timer = setTimeout(function(){ if (cur === el) { place(el); tip.classList.add("show"); } }, 400);
+    });
+    document.addEventListener("pointerout", function(e){
+      if (cur && (!e.relatedTarget || !cur.contains(e.relatedTarget))) hide();
+    });
+    ["pointerdown","keydown","scroll","blur"].forEach(function(ev){ window.addEventListener(ev, hide, true); });
+  })();
   applyUrl();
   fitSym();
   syncExtra();
