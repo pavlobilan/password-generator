@@ -450,6 +450,15 @@ input.glyphs:not([readonly]):focus{border-color:var(--accent);box-shadow:0 0 0 3
     var p = (lenR.value - lenR.min) / (lenR.max - lenR.min) * 100;
     lenR.style.setProperty("--p", p + "%");
   }
+  // Клік по полю довжини одразу виділяє число, щоб його можна було просто передрукувати
+  var lenJustFocused = false;
+  lenN.addEventListener("focus", function(){
+    lenJustFocused = true;
+    try { lenN.select(); } catch (_) {}
+    requestAnimationFrame(function(){ try { lenN.select(); } catch (_) {} });
+  });
+  lenN.addEventListener("mouseup", function(e){ if (lenJustFocused) { e.preventDefault(); lenJustFocused = false; } });
+  lenN.addEventListener("blur", function(){ lenJustFocused = false; });
   lenR.addEventListener("input", function(){ lenN.value = lenR.value; paintRange(); });
   lenN.addEventListener("input", function(){ lenR.value = Math.min(64, lenN.value || 0); paintRange(); });
   // Власні кнопки ▲▼ для довжини (з автоповтором при утриманні)
