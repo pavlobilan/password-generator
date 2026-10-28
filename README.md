@@ -1,25 +1,25 @@
 # Password Generator
 
-Статична сторінка генерації паролів. Пароль створюється в браузері через `crypto.getRandomValues`, на сервер нічого не передається.
+A static password generator page. Passwords are created in the browser with `crypto.getRandomValues`; nothing is sent to a server.
 
-## Параметри URL
+## URL parameters
 
-Великі й малі літери та цифри використовуються завжди. Схожі символи `I O Q l o 0 1` виключені завжди.
+Upper- and lowercase letters and digits are always used. Look-alike characters `I O Q l o 0 1` are always excluded.
 
-| Параметр | Значення | За замовчуванням |
+| Parameter | Values | Default |
 |---|---|---|
 | `len` | 4–128 | 25 |
-| `special` | `on` / `off` — спецсимволи `!#%+@:=?*` | `off` |
+| `special` | `on` / `off` — special characters `!#%+@:=?*` | `off` |
 
-Коли спецсимволи увімкнені, сам набір `!#%+@:=?*` стає редагованим: символи можна дописати або прибрати. В URL вони не зберігаються.
+When special characters are enabled, the `!#%+@:=?*` set itself becomes editable: characters can be added or removed. The edited set is not stored in the URL.
 
-Приклад: `?len=16&special=on`
+Example: `?len=16&special=on`
 
-## Індикатор надійності
+## Strength indicator
 
-Колір рамки картки пароля плавно змінюється від червоного через помаранчевий до зеленого. Оцінка — менше з двох значень:
+The password card border colour shifts smoothly from red through orange to green. The score is the lower of two values:
 
-- **Довжина** — за NIST SP 800-63B-4 (мінімум 15 символів для пароля без MFA) і CISA (від 16 символів): до 8 — червоний, 15–16 — перехід до зеленого, 25 — максимум.
-- **Ентропія** — `довжина × log2(розмір алфавіту)`: 40 біт — слабкий, 80 — сильний, 128 і більше — надійний.
+- **Length** — based on NIST SP 800-63B-4 (minimum 15 characters for a password without MFA) and CISA (16 characters or more): up to 8 — red, 15–16 — turning green, 25 — maximum.
+- **Entropy** — `length × log2(alphabet size)`: 40 bits — weak, 80 — strong, 128 and above — very strong.
 
-Після 25 символів оцінка не змінюється.
+The score does not change beyond 25 characters.
