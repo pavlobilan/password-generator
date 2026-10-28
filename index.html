@@ -37,7 +37,7 @@ h1{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;
 
 .stack{width:fit-content;max-width:100%;margin:0 auto}
 .cardwrap{position:relative;--gap:72px}
-.toast{position:absolute;left:50%;top:calc(100% + var(--gap) / 2);z-index:2;padding:14px 32px;border:1px solid var(--line);border-radius:14px;
+.toast{position:absolute;left:50%;top:calc(100% + var(--gap) / 2 + var(--toff,4.25px));z-index:2;padding:14px 32px;border:1px solid var(--line);border-radius:14px;
   background:var(--panel);color:var(--ink);font:500 19px var(--sans);white-space:nowrap;
   box-shadow:0 6px 20px rgba(23,33,43,.14);opacity:0;transform:translate(-50%,calc(-50% - 6px));pointer-events:none}
 .toast.show{opacity:.95;transform:translate(-50%,-50%)}
@@ -92,6 +92,7 @@ input.text{width:260px;max-width:100%;padding:7px 10px;border:1px solid var(--li
 @media (min-width:561px){
   :root{--lblw:132px}
   .cardwrap,.opts{--gap:60px}
+  .cardwrap{--toff:4.75px}
   .opts{--rg:20px;font-size:16px;padding:0 20px 0 30px}
   .lbl{font-size:16px}
   .num{gap:20px}
@@ -117,6 +118,7 @@ input.text{width:260px;max-width:100%;padding:7px 10px;border:1px solid var(--li
   .ibtn svg{width:22px;height:22px}
   .toast{font-size:16px;padding:10px 24px}
   .cardwrap,.opts{--gap:60px}
+  .cardwrap{--toff:5.5px}
   .pw{font-size:21px}
   .opts{--rg:14px;padding:0 18px}
   .num input[type=range]{flex:1;width:auto}
@@ -241,6 +243,7 @@ input.glyphs:not([readonly]):focus{border-color:var(--accent);box-shadow:0 0 0 3
   .ibtn{height:44px}
   input[type=number]{height:46px}
   .cardwrap,.opts{--gap:48px}
+  .cardwrap{--toff:4px}
   .opts{--rg:12px}
 }
 ::view-transition-old(root),::view-transition-new(root){animation-duration:.4s;animation-timing-function:ease}
